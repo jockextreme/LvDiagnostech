@@ -278,9 +278,32 @@ const DashboardApp = (() => {
     },
   };
 
+  /* ---------- Session Module ---------- */
+  const Session = {
+    init() {
+      if (typeof Auth === 'undefined') {
+        window.location.replace('login.html');
+        return false;
+      }
+
+      const user = Auth.guard(document.body.dataset.role);
+      if (!user) return false;
+
+      Auth.applyUser(user);
+      document.querySelectorAll('[data-signout]').forEach((link) => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          Auth.logout();
+        });
+      });
+      return true;
+    },
+  };
+
   /* ---------- App Bootstrap ---------- */
   return {
     init() {
+      if (!Session.init()) return;
       Toast.init();
       Theme.init();
       Navbar.init();

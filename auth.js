@@ -1,10 +1,41 @@
 /**
- * DiagnosTech — Authentication Page
- * Navbar, scroll reveal, login form, and password toggle.
+ * DiagnosTech — Authentication pages
+ * Navbar, scroll reveal, password toggles, sign-in and sign-up forms.
  */
 
 const AuthApp = (() => {
   'use strict';
+
+  /* ---------- Shared form helpers ---------- */
+  const UI = {
+    isEmail: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+
+    invalid(input) {
+      if (!input) return;
+      input.classList.add('error');
+      input.setAttribute('aria-invalid', 'true');
+    },
+
+    valid(input) {
+      input.classList.remove('error');
+      input.removeAttribute('aria-invalid');
+    },
+
+    reset(form, statusEl) {
+      form.querySelectorAll('input').forEach((input) => UI.valid(input));
+      UI.status(statusEl, '', '');
+    },
+
+    status(el, message, type) {
+      el.textContent = message;
+      el.className = type ? `form-status ${type}` : 'form-status';
+    },
+
+    busy(btn, on) {
+      btn.classList.toggle('loading', on);
+      btn.disabled = on;
+    },
+  };
 
   /* ---------- Navbar Module ---------- */
   const Navbar = {
@@ -66,21 +97,21 @@ const AuthApp = (() => {
     },
   };
 
-  /* ---------- Password Toggle Module ---------- */
+  /* ---------- Password Toggle Module (works for every .password-field) ---------- */
   const PasswordToggle = {
     init() {
-      this.input = document.getElementById('password');
-      this.btn = document.getElementById('passwordToggle');
-      if (!this.input || !this.btn) return;
+      document.querySelectorAll('.password-field').forEach((field) => {
+        const input = field.querySelector('input');
+        const btn = field.querySelector('.password-toggle');
+        if (!input || !btn) return;
 
-      this.btn.addEventListener('click', () => this.toggle());
-    },
-
-    toggle() {
-      const isPassword = this.input.type === 'password';
-      this.input.type = isPassword ? 'text' : 'password';
-      this.btn.classList.toggle('visible', isPassword);
-      this.btn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+        btn.addEventListener('click', () => {
+          const isPassword = input.type === 'password';
+          input.type = isPassword ? 'text' : 'password';
+          btn.classList.toggle('visible', isPassword);
+          btn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+        });
+      });
     },
   };
 
@@ -88,89 +119,136 @@ const AuthApp = (() => {
   const LoginForm = {
     init() {
       this.form = document.getElementById('loginForm');
+      if (!this.form) return;
+
       this.btn = document.getElementById('loginBtn');
       this.status = document.getElementById('formStatus');
       this.ssoBtn = document.getElementById('ssoBtn');
 
-      if (!this.form) return;
-
       this.form.addEventListener('submit', (e) => this.handleSubmit(e));
-      this.ssoBtn?.addEventListener('click', () => this.handleSSO());
-
+      this.ssoBtn?.addEventListener('click', () => {
+        UI.status(this.status, 'University SSO is not connected yet. Sign in with your email for now.', 'error');
+      });
       this.form.querySelectorAll('input').forEach((input) => {
-        input.addEventListener('input', () => this.clearFieldError(input));
+        input.addEventListener('input', () => UI.valid(input));
       });
     },
 
-    handleSubmit(e) {
+    async handleSubmit(e) {
       e.preventDefault();
       if (this.btn.classList.contains('loading')) return;
 
       const data = new FormData(this.form);
-      const email = data.get('email')?.trim();
-      const password = data.get('password')?.trim();
+      const email = String(data.get('email') ?? '').trim();
+      const password = String(data.get('password') ?? '');
+      const role = data.get('role');
       const emailInput = this.form.querySelector('#email');
       const passwordInput = this.form.querySelector('#password');
 
-      this.clearStatus();
+      UI.reset(this.form, this.status);
+
       let valid = true;
-
-      if (!email || !this.isValidEmail(email)) {
-        this.setFieldError(emailInput);
-        valid = false;
-      }
-
-      if (!password || password.length < 6) {
-        this.setFieldError(passwordInput);
-        valid = false;
-      }
-
+      if (!UI.isEmail(email)) { UI.invalid(emailInput); valid = false; }
+      if (!password) { UI.invalid(passwordInput); valid = false; }
       if (!valid) {
-        this.showStatus('Please check your email and password.', 'error');
+        UI.status(this.status, 'Enter your email and password.', 'error');
         return;
       }
 
-      this.simulateLogin(email, data.get('role'));
+      if (typeof Auth === 'undefined') {
+        UI.status(this.status, 'Sign-in is unavailable right now. Please reload the page.', 'error');
+        return;
+      }
+
+      UI.busy(this.btn, true);
+      try {
+        const result = await Auth.login({ email, password, role, remember: data.get('remember') === 'on' });
+
+        if (!result.ok) {
+          UI.busy(this.btn, false);
+          if (result.field === 'email') UI.invalid(emailInput);
+          UI.status(this.status, result.message, 'error');
+          return;
+        }
+
+        UI.status(this.status, `Welcome back, ${Auth.firstName(result.user)}!`, 'success');
+        setTimeout(() => { window.location.href = Auth.homeFor(result.user); }, 500);
+      } catch (err) {
+        UI.busy(this.btn, false);
+        UI.status(this.status, 'Something went wrong. Please try again.', 'error');
+      }
+    },
+  };
+
+  /* ---------- Sign-up Form Module ---------- */
+  const SignupForm = {
+    init() {
+      this.form = document.getElementById('signupForm');
+      if (!this.form) return;
+
+      this.btn = document.getElementById('signupBtn');
+      this.status = document.getElementById('formStatus');
+
+      this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+      this.form.querySelectorAll('input').forEach((input) => {
+        input.addEventListener('input', () => UI.valid(input));
+      });
     },
 
-    simulateLogin(email, role) {
-      this.btn.classList.add('loading');
-      this.btn.disabled = true;
-      this.clearStatus();
+    async handleSubmit(e) {
+      e.preventDefault();
+      if (this.btn.classList.contains('loading')) return;
 
-      setTimeout(() => {
-        this.showStatus(`Welcome back! Signed in as ${role}.`, 'success');
-        setTimeout(() => {
-          window.location.href = role === 'doctor' ? 'doctor_dashboard.html' : 'dashboard.html';
-        }, 600);
-      }, 900);
-    },
+      const data = new FormData(this.form);
+      const name = String(data.get('name') ?? '').replace(/\s+/g, ' ').trim();
+      const email = String(data.get('email') ?? '').trim();
+      const password = String(data.get('password') ?? '');
+      const confirm = String(data.get('confirm') ?? '');
+      const role = data.get('role');
 
-    handleSSO() {
-      this.showStatus('Redirecting to university SSO portal…', 'success');
-    },
+      const field = (id) => this.form.querySelector(id);
+      const problems = [];
 
-    isValidEmail(email) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    },
+      UI.reset(this.form, this.status);
 
-    setFieldError(input) {
-      input.classList.add('error');
-      input.classList.remove('success');
-    },
+      if (name.length < 2 || name.length > 60) problems.push([field('#fullName'), 'Enter your full name (2–60 characters).']);
+      if (!UI.isEmail(email)) problems.push([field('#email'), 'Enter a valid email address.']);
+      if (password.length < 8) problems.push([field('#password'), 'Use at least 8 characters for your password.']);
+      else if (confirm !== password) problems.push([field('#confirmPassword'), 'Passwords do not match.']);
 
-    clearFieldError(input) {
-      input.classList.remove('error');
-    },
+      if (problems.length) {
+        problems.forEach(([input]) => UI.invalid(input));
+        UI.status(this.status, problems[0][1], 'error');
+        problems[0][0].focus();
+        return;
+      }
 
-    clearStatus() {
-      this.status.textContent = '';
-      this.status.className = 'form-status';
-    },
+      if (typeof Auth === 'undefined') {
+        UI.status(this.status, 'Sign-up is unavailable right now. Please reload the page.', 'error');
+        return;
+      }
 
-    showStatus(message, type) {
-      this.status.textContent = message;
-      this.status.className = `form-status ${type}`;
+      UI.busy(this.btn, true);
+      try {
+        const result = await Auth.register({ name, email, password, role });
+
+        if (!result.ok) {
+          UI.busy(this.btn, false);
+          const target = { name: '#fullName', email: '#email', password: '#password' }[result.field];
+          if (target) {
+            UI.invalid(field(target));
+            field(target).focus();
+          }
+          UI.status(this.status, result.message, 'error');
+          return;
+        }
+
+        UI.status(this.status, `Account created. Welcome, ${Auth.firstName(result.user)}!`, 'success');
+        setTimeout(() => { window.location.href = Auth.homeFor(result.user); }, 700);
+      } catch (err) {
+        UI.busy(this.btn, false);
+        UI.status(this.status, 'Something went wrong. Please try again.', 'error');
+      }
     },
   };
 
@@ -181,6 +259,7 @@ const AuthApp = (() => {
       ScrollReveal.init();
       PasswordToggle.init();
       LoginForm.init();
+      SignupForm.init();
     },
   };
 })();

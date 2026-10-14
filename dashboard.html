@@ -25,7 +25,7 @@
   </script>
   <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
-<body class="dashboard-page">
+<body class="dashboard-page" data-role="patient">
 
   <!-- Floating Glass Navbar -->
   <header class="navbar navbar--dashboard" id="navbar">
@@ -60,16 +60,16 @@
         </button>
         <div class="navbar__user" id="userMenu">
         <button class="navbar__user-btn" id="userMenuBtn" aria-expanded="false" aria-haspopup="true">
-          <span class="navbar__avatar">B</span>
-          <span class="navbar__user-name">Bcen Bulawan</span>
+          <span class="navbar__avatar" data-user-initials>U</span>
+          <span class="navbar__user-name" data-user-name>Account</span>
           <svg class="navbar__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path d="M6 9l6 6 6-6"/>
           </svg>
         </button>
         <div class="navbar__dropdown" id="userDropdown">
           <div class="navbar__dropdown-header">
-            <strong>Bcen Bulawan</strong>
-            <span>bcen.bulawan@laverdad.edu.ph</span>
+            <strong data-user-name>Account</strong>
+            <span data-user-email></span>
           </div>
           <a href="#" class="navbar__dropdown-item">My Profile</a>
           <a href="#" class="navbar__dropdown-item">Settings</a>
@@ -79,7 +79,7 @@
           </button>
           <a href="index.html" class="navbar__dropdown-item">Help Center</a>
           <hr class="navbar__dropdown-divider">
-          <a href="login.html" class="navbar__dropdown-item navbar__dropdown-item--danger">Sign Out</a>
+          <a href="login.html" class="navbar__dropdown-item navbar__dropdown-item--danger" data-signout>Sign Out</a>
         </div>
         </div>
       </div>
@@ -98,7 +98,7 @@
       <section class="dashboard-header reveal" id="overview">
         <div>
           <p class="dashboard-header__greeting" id="greeting">Good morning</p>
-          <h1>Welcome back, <span class="text-gradient">Bcen</span></h1>
+          <h1>Welcome back, <span class="text-gradient" data-user-welcome>there</span></h1>
           <p class="dashboard-header__sub">Here's an overview of your campus health activity.</p>
         </div>
         <a href="index.html#contact" class="btn btn--primary btn--lg">Book Appointment</a>
@@ -301,6 +301,7 @@
     </div>
   </footer>
 
+  <script src="session.js"></script>
   <script src="dashboard.js"></script>
 </body>
 </html>

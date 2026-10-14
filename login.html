@@ -105,7 +105,7 @@
           <p>Enter your account details below</p>
         </div>
 
-        <form class="auth-form" id="loginForm" action="dashboard.html" novalidate>
+        <form class="auth-form" id="loginForm" novalidate>
           <fieldset class="form-group role-fieldset">
             <legend>I am a</legend>
             <div class="role-selector" id="roleSelector">
@@ -126,7 +126,7 @@
               type="email"
               id="email"
               name="email"
-              placeholder="you@university.edu"
+              placeholder="you@laverdad.edu.ph"
               autocomplete="email"
               required
             >
@@ -192,6 +192,10 @@
         </button>
 
         <p class="auth-card__footer">
+          New here? <a href="signup.html" class="auth-link">Create an account</a>
+        </p>
+
+        <p class="auth-card__footer">
           Need help? <a href="index.html#contact" class="auth-link">Contact campus support</a>
         </p>
       </section>
@@ -244,6 +248,7 @@
     </div>
   </footer>
 
+  <script src="session.js"></script>
   <script src="auth.js"></script>
 </body>
 </html>

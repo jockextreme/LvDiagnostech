@@ -189,6 +189,12 @@ const App = (() => {
       if (prefs.doctor) form.doctor.value = prefs.doctor;
       form.date.value = today;
 
+      const me = window.Auth && window.Auth.current();
+      if (me) {
+        form.elements['name'].value = me.name;
+        form.elements['email'].value = me.email;
+      }
+
       form.addEventListener('submit', (e) => {
         e.preventDefault();
         const data = Object.fromEntries(new FormData(form).entries());
@@ -492,6 +498,12 @@ const App = (() => {
       this.form = document.getElementById('contactForm');
       this.status = document.getElementById('formStatus');
       this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+
+      const me = window.Auth && window.Auth.current();
+      if (me) {
+        this.form.elements['name'].value = me.name;
+        this.form.elements['email'].value = me.email;
+      }
     },
 
     handleSubmit(e) {
@@ -582,6 +594,14 @@ const App = (() => {
       Modal.init();
       Phone.init();
       Actions.init();
+
+      const me = window.Auth && window.Auth.current();
+      if (me) {
+        document.querySelectorAll('a[href="login.html"]').forEach((a) => {
+          a.textContent = 'My Dashboard';
+          a.setAttribute('href', window.Auth.homeFor(me));
+        });
+      }
     },
   };
 })();

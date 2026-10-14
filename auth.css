@@ -364,16 +364,22 @@
 }
 
 /* --- Submit Button Loading State --- */
-#loginBtn {
+.auth-form .btn {
   position: relative;
 }
 
-#loginBtn.loading .btn-text {
+.auth-form .btn.loading .btn-text {
   opacity: 0;
 }
 
-#loginBtn.loading .btn-loader {
+.auth-form .btn.loading .btn-loader {
   opacity: 1;
+}
+
+.form-hint {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
 }
 
 .btn-loader {

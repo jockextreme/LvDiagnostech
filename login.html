@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Sign in to DiagnosTech — University healthcare appointment portal.">
+  <title>DiagnosTech | Sign In</title>
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="auth.css">
+</head>
+<body class="auth-page">
+
+  <!-- Floating Glass Navbar -->
+  <header class="navbar navbar--auth" id="navbar">
+    <nav class="navbar__inner container">
+      <a href="index.html" class="navbar__brand">
+        <img src="logo.png" class="navbar__logo" alt="DiagnosTech logo" />
+        DiagnosTech
+      </a>
+
+      <button class="navbar__toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <ul class="navbar__links" id="navLinks">
+        <li><a href="index.html#services">Services</a></li>
+        <li><a href="index.html#departments">Departments</a></li>
+        <li><a href="index.html#doctors">Doctors</a></li>
+        <li><a href="index.html#faq">FAQ</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+
+      <div class="navbar__actions">
+        <a href="index.html" class="btn btn--ghost navbar__cta">Back to Home</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="auth-main">
+    <div class="auth-bg" aria-hidden="true">
+      <div class="auth-bg__orb auth-bg__orb--1"></div>
+      <div class="auth-bg__orb auth-bg__orb--2"></div>
+    </div>
+
+    <div class="container auth-layout">
+      <!-- Brand Panel -->
+      <aside class="auth-panel reveal">
+        <span class="badge">Secure Campus Portal</span>
+        <h1>Welcome back to <span class="text-gradient">DiagnosTech</span></h1>
+        <p>Sign in with your credentials to manage appointments, view health records, and connect with campus care providers.</p>
+
+        <ul class="auth-features">
+          <li>
+            <span class="auth-features__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+            </span>
+            <div>
+              <strong>DPO/DPA Registered</strong>
+              <span>Your health data stays protected</span>
+            </div>
+          </li>
+          <li>
+            <span class="auth-features__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"/></svg>
+            </span>
+            <div>
+              <strong>Book in seconds</strong>
+              <span>Real-time clinic availability</span>
+            </div>
+          </li>
+          <li>
+            <span class="auth-features__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 10l4.553-2.069A1 1 0 0121 8.845v6.31a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            </span>
+            <div>
+              <strong>Telehealth ready</strong>
+              <span>Virtual visits from anywhere on campus</span>
+            </div>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Login Form -->
+      <section class="auth-card card reveal reveal--delay">
+        <div class="auth-card__header">
+          <h2>Sign in</h2>
+          <p>Enter your account details below</p>
+        </div>
+
+        <form class="auth-form" id="loginForm" action="dashboard.html" novalidate>
+          <div class="form-group">
+            <label for="role">I am a</label>
+            <div class="role-selector" id="roleSelector">
+              <label class="role-option">
+                <input type="radio" name="role" value="patient" checked>
+                <span>Patient</span>
+              </label>
+              <label class="role-option">
+                <input type="radio" name="role" value="doctor">
+                <span>Doctor</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="you@university.edu"
+              autocomplete="email"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="password-field">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+              >
+              <button
+                type="button"
+                class="password-toggle"
+                id="passwordToggle"
+                aria-label="Show password"
+              >
+                <svg class="icon-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+                <svg class="icon-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+                  <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="auth-form__options">
+            <label class="checkbox-label">
+              <input type="checkbox" id="remember" name="remember">
+              <span class="checkbox-custom"></span>
+              Remember me
+            </label>
+            <a href="#" class="auth-link">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn btn--primary btn--full btn--lg" id="loginBtn">
+            <span class="btn-text">Sign In</span>
+            <span class="btn-loader" aria-hidden="true"></span>
+          </button>
+
+          <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+        </form>
+
+        <div class="auth-divider">
+          <span>or continue with</span>
+        </div>
+
+        <button type="button" class="btn btn--outline btn--full auth-sso" id="ssoBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          La Verdad Email
+        </button>
+
+        <p class="auth-card__footer">
+          Need help? <a href="index.html#contact" class="auth-link">Contact campus support</a>
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer footer--compact">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <a href="index.html" class="navbar__brand">
+            <img src="logo.png" class="navbar__logo" alt="DiagnosTech logo" />
+            DiagnosTech
+          </a>
+          <p>La Verdad healthcare appointment system — caring for campus, one visit at a time.</p>
+        </div>
+        <div class="footer__links">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="index.html#services">Services</a></li>
+            <li><a href="index.html#departments">Departments</a></li>
+            <li><a href="index.html#doctors">Doctors</a></li>
+            <li><a href="index.html#faq">FAQ</a></li>
+          </ul>
+        </div>
+        <div class="footer__links">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#">Student Portal</a></li>
+            <li><a href="#">Insurance Info</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div class="footer__links">
+          <h4>Connect</h4>
+          <ul>
+            <li><a href="#">Twitter / X</a></li>
+            <li><a href="#">LinkedIn</a></li>
+            <li><a href="#">Instagram</a></li>
+            <li><a href="mailto:care@diagnos.tech">care@diagnos.tech</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>&copy; 2026 DiagnosTech. All rights reserved.</p>
+        <p>DPO/DPA Registered · Partnered by La Verdad Diagnostic Center</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="auth.js"></script>
+  <script>
+    (function() {
+      const loginForm = document.getElementById('loginForm');
+      const formStatus = document.getElementById('formStatus');
+
+      if (!loginForm) return;
+
+      loginForm.addEventListener('submit', function(event) {
+        const email = loginForm.email.value.trim();
+        const password = loginForm.password.value.trim();
+
+        if (!email || !password) {
+          event.preventDefault();
+          formStatus.textContent = 'Please enter both email and password to continue.';
+          formStatus.classList.add('form-status--error');
+          return;
+        }
+
+        event.preventDefault();
+        formStatus.textContent = 'Signing in…';
+        const role = loginForm.querySelector('input[name="role"]:checked').value;
+        window.location.href = role === 'doctor' ? 'doctor_dashboard.html' : 'dashboard.html';
+      });
+    })();
+  </script>
+</body>
+</html>

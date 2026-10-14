@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="DiagnosTech Student Dashboard — Manage appointments and health records.">
+  <title>DiagnosTech | Dashboard</title>
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="dashboard.css">
+  <script>
+    (function () {
+      var key = 'diagnostech-theme';
+      var theme = 'light';
+      try {
+        var stored = localStorage.getItem(key);
+        if (stored === 'dark' || stored === 'light') theme = stored;
+        else if (window.matchMedia('(prefers-color-scheme: dark)').matches) theme = 'dark';
+      } catch (e) {}
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+</head>
+<body class="dashboard-page">
+
+  <!-- Floating Glass Navbar -->
+  <header class="navbar navbar--dashboard" id="navbar">
+    <nav class="navbar__inner container">
+      <a href="index.html" class="navbar__brand">
+        <img src="logo.png" alt="DiagnosTech logo" class="navbar__logo">
+        DiagnosTech
+      </a>
+
+      <button class="navbar__toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <ul class="navbar__links" id="navLinks">
+        <li><a href="#overview" class="active">Overview</a></li>
+        <li><a href="#appointments">Appointments</a></li>
+        <li><a href="#records">Health Records</a></li>
+        <li><a href="#notifications">Notifications</a></li>
+      </ul>
+
+      <div class="navbar__tools">
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode" aria-pressed="false">
+          <svg class="theme-toggle__moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M21 14.3A8.5 8.5 0 1110.2 3 7 7 0 0021 14.3z"/>
+          </svg>
+          <svg class="theme-toggle__sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+          </svg>
+        </button>
+        <div class="navbar__user" id="userMenu">
+        <button class="navbar__user-btn" id="userMenuBtn" aria-expanded="false" aria-haspopup="true">
+          <span class="navbar__avatar">B</span>
+          <span class="navbar__user-name">Bcen Bulawan</span>
+          <svg class="navbar__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </button>
+        <div class="navbar__dropdown" id="userDropdown">
+          <div class="navbar__dropdown-header">
+            <strong>Bcen Bulawan</strong>
+            <span>bcen.bulawan@laverdad.edu.ph</span>
+          </div>
+          <a href="#" class="navbar__dropdown-item">My Profile</a>
+          <a href="#" class="navbar__dropdown-item">Settings</a>
+          <button type="button" class="navbar__dropdown-item theme-switch" data-theme-toggle aria-pressed="false">
+            <span>Dark mode</span>
+            <span class="theme-switch__track" aria-hidden="true"></span>
+          </button>
+          <a href="index.html" class="navbar__dropdown-item">Help Center</a>
+          <hr class="navbar__dropdown-divider">
+          <a href="login.html" class="navbar__dropdown-item navbar__dropdown-item--danger">Sign Out</a>
+        </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="dashboard-main">
+    <div class="dashboard-bg" aria-hidden="true">
+      <div class="dashboard-bg__orb dashboard-bg__orb--1"></div>
+      <div class="dashboard-bg__orb dashboard-bg__orb--2"></div>
+    </div>
+
+    <div class="container dashboard-container">
+
+      <!-- Overview Header -->
+      <section class="dashboard-header reveal" id="overview">
+        <div>
+          <p class="dashboard-header__greeting" id="greeting">Good morning</p>
+          <h1>Welcome back, <span class="text-gradient">Bcen</span></h1>
+          <p class="dashboard-header__sub">Here's an overview of your campus health activity.</p>
+        </div>
+        <a href="index.html#contact" class="btn btn--primary btn--lg">Book Appointment</a>
+      </section>
+
+      <!-- Stats -->
+      <section class="stats-grid reveal reveal--delay">
+        <article class="card stat-card">
+          <div class="stat-card__icon stat-card__icon--blue" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"/></svg>
+          </div>
+          <div>
+            <strong class="stat-card__value">2</strong>
+            <span class="stat-card__label">Upcoming Visits</span>
+          </div>
+        </article>
+        <article class="card stat-card">
+          <div class="stat-card__icon stat-card__icon--green" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
+          </div>
+          <div>
+            <strong class="stat-card__value">1</strong>
+            <span class="stat-card__label">New Lab Results</span>
+          </div>
+        </article>
+        <article class="card stat-card">
+          <div class="stat-card__icon stat-card__icon--purple" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          </div>
+          <div>
+            <strong class="stat-card__value">3</strong>
+            <span class="stat-card__label">Unread Alerts</span>
+          </div>
+        </article>
+        <article class="card stat-card">
+          <div class="stat-card__icon stat-card__icon--amber" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+          </div>
+          <div>
+            <strong class="stat-card__value">Active</strong>
+            <span class="stat-card__label">Insurance Status</span>
+          </div>
+        </article>
+      </section>
+
+      <!-- Main Grid -->
+      <div class="dashboard-grid">
+
+        <!-- Upcoming Appointments -->
+        <section class="card dashboard-card reveal" id="appointments">
+          <div class="dashboard-card__header">
+            <h2>Upcoming Appointments</h2>
+            <a href="#" class="dashboard-card__link">View all</a>
+          </div>
+          <ul class="appointment-list" id="appointmentList">
+            <li class="appointment-item" data-id="1">
+              <div class="appointment-item__date">
+                <strong>28</strong>
+                <span>Jul</span>
+              </div>
+              <div class="appointment-item__info">
+                <h3>General Check-up</h3>
+                <p>Dr. Rizal Park · Campus Health Center</p>
+                <span class="appointment-item__time">Mon, 10:30 AM · Room B-204</span>
+              </div>
+              <div class="appointment-item__actions">
+                <button class="btn btn--outline btn--sm appointment-reschedule" type="button">Reschedule</button>
+                <button class="btn btn--ghost btn--sm appointment-cancel" type="button">Cancel</button>
+              </div>
+            </li>
+            <li class="appointment-item" data-id="2">
+              <div class="appointment-item__date appointment-item__date--telehealth">
+                <strong>02</strong>
+                <span>Aug</span>
+              </div>
+              <div class="appointment-item__info">
+                <h3>Telehealth — Mental Health</h3>
+                <p>Dr. Lebleb Macalintal · Video Consultation</p>
+                <span class="appointment-item__time">Sat, 2:00 PM · Online</span>
+              </div>
+              <div class="appointment-item__actions">
+                <button class="btn btn--primary btn--sm" type="button">Join Call</button>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="card dashboard-card reveal reveal--delay">
+          <div class="dashboard-card__header">
+            <h2>Quick Actions</h2>
+          </div>
+          <div class="quick-actions">
+            <a href="index.html#contact" class="quick-action">
+              <span class="quick-action__icon" aria-hidden="true">📅</span>
+              <span>Book Visit</span>
+            </a>
+            <a href="#" class="quick-action">
+              <span class="quick-action__icon" aria-hidden="true">🎥</span>
+              <span>Start Telehealth</span>
+            </a>
+            <a href="#records" class="quick-action">
+              <span class="quick-action__icon" aria-hidden="true">📋</span>
+              <span>View Records</span>
+            </a>
+            <a href="index.html#faq" class="quick-action">
+              <span class="quick-action__icon" aria-hidden="true">💬</span>
+              <span>Get Support</span>
+            </a>
+          </div>
+        </section>
+
+        <!-- Health Records -->
+        <section class="card dashboard-card reveal" id="records">
+          <div class="dashboard-card__header">
+            <h2>Recent Health Records</h2>
+            <a href="#" class="dashboard-card__link">View all</a>
+          </div>
+          <div class="records-list">
+            <article class="record-item record-item--new">
+              <div class="record-item__icon" aria-hidden="true">🧪</div>
+              <div class="record-item__content">
+                <h3>Blood Panel Results</h3>
+                <p>Complete metabolic panel · Jul 22, 2026</p>
+              </div>
+              <span class="record-item__badge">New</span>
+              <button class="btn btn--outline btn--sm" type="button">View</button>
+            </article>
+            <article class="record-item">
+              <div class="record-item__icon" aria-hidden="true">💊</div>
+              <div class="record-item__content">
+                <h3>Prescription Refill</h3>
+                <p>Vitamin D supplement · Jul 10, 2026</p>
+              </div>
+              <button class="btn btn--ghost btn--sm" type="button">View</button>
+            </article>
+            <article class="record-item">
+              <div class="record-item__icon" aria-hidden="true">🩺</div>
+              <div class="record-item__content">
+                <h3>Annual Physical Summary</h3>
+                <p>Dr. Elena Martinez · Jun 15, 2026</p>
+              </div>
+              <button class="btn btn--ghost btn--sm" type="button">View</button>
+            </article>
+          </div>
+        </section>
+
+        <!-- Notifications -->
+        <section class="card dashboard-card reveal reveal--delay" id="notifications">
+          <div class="dashboard-card__header">
+            <h2>Notifications</h2>
+            <button class="dashboard-card__link dashboard-card__link--btn" id="markAllRead" type="button">Mark all read</button>
+          </div>
+          <ul class="notification-list" id="notificationList">
+            <li class="notification-item notification-item--unread">
+              <span class="notification-item__dot" aria-hidden="true"></span>
+              <div>
+                <p><strong>Lab results available</strong> — Your blood panel from Jul 22 is ready to view.</p>
+                <time datetime="2026-07-23">2 hours ago</time>
+              </div>
+            </li>
+            <li class="notification-item notification-item--unread">
+              <span class="notification-item__dot" aria-hidden="true"></span>
+              <div>
+                <p><strong>Appointment reminder</strong> — General check-up on Mon, Jul 28 at 10:30 AM.</p>
+                <time datetime="2026-07-25">Yesterday</time>
+              </div>
+            </li>
+            <li class="notification-item notification-item--unread">
+              <span class="notification-item__dot" aria-hidden="true"></span>
+              <div>
+                <p><strong>Flu shot clinic</strong> — Free vaccinations available Aug 5–7 at the Student Union.</p>
+                <time datetime="2026-07-24">2 days ago</time>
+              </div>
+            </li>
+            <li class="notification-item">
+              <span class="notification-item__dot" aria-hidden="true"></span>
+              <div>
+                <p><strong>Insurance verified</strong> — Your university health plan is active for 2026–27.</p>
+                <time datetime="2026-07-20">6 days ago</time>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Footer -->
+  <footer class="footer footer--compact">
+    <div class="container">
+      <div class="footer__bottom footer__bottom--solo">
+        <p>&copy; 2026 DiagnosTech. All rights reserved.</p>
+        <p>DPO/DPA Registered · Partnered by La Verdad Diagnostic Center</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

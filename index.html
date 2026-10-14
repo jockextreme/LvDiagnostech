@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="DiagnosTech — Healthcare appointment system for students, faculty, and staff.">
+  <title>DiagnosTech</title>
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Floating Glass Navbar -->
+  <header class="navbar" id="navbar">
+    <nav class="navbar__inner container">
+      <a href="#hero" class="navbar__brand">
+        <img src="logo.png" alt="" class="navbar__logo" aria-hidden="true">
+        DiagnosTech
+      </a>
+
+      <button class="navbar__toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <ul class="navbar__links" id="navLinks">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#departments">Departments</a></li>
+        <li><a href="#doctors">Doctors</a></li>
+        <li><a href="#testimonials">Reviews</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li class="navbar__mobile-only"><a href="login.html">Log In</a></li>
+        <li class="navbar__mobile-only">
+          <button type="button" class="navbar__menu-btn" data-open-booking>Book Appointment</button>
+        </li>
+      </ul>
+
+      <div class="navbar__actions">
+        <a href="login.html" class="btn btn--outline navbar__cta">Log In</a>
+        <button type="button" class="btn btn--primary navbar__cta" data-open-booking>Book Appointment</button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero" id="hero">
+      <div class="hero__bg" aria-hidden="true">
+        <div class="hero__orb hero__orb--1"></div>
+        <div class="hero__orb hero__orb--2"></div>
+      </div>
+      <div class="container hero__grid">
+        <div class="hero__content reveal">
+          <span class="badge">Trusted by 1,200+ campus members</span>
+          <h1>Healthcare appointments, <span class="text-gradient">simplified for Laverdarians</span></h1>
+          <p>DiagnosTech connects students, faculty, and staff with university medical services — book visits, manage records, and get care without leaving campus.</p>
+          <div class="hero__actions">
+            <button type="button" class="btn btn--primary btn--lg" data-open-booking>Schedule a Visit</button>
+            <a href="#services" class="btn btn--ghost btn--lg">Explore Services</a>
+          </div>
+          <div class="hero__stats">
+            <div class="hero__stat">
+              <strong>24/7</strong>
+              <span>Online booking</span>
+            </div>
+            <div class="hero__stat">
+              <strong>45+</strong>
+              <span>Specialists</span>
+            </div>
+            <div class="hero__stat">
+              <strong>98%</strong>
+              <span>Satisfaction rate</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero__visual reveal reveal--delay">
+          <div class="hero-scene" id="heroScene">
+            <div class="hero-scene__glow" aria-hidden="true"></div>
+            <div class="campus-art campus-art--hall" aria-hidden="true">
+              <svg viewBox="0 0 180 170" fill="none">
+                <ellipse cx="90" cy="158" rx="78" ry="10" fill="#c7e4ff" opacity=".7"/>
+                <rect x="28" y="58" width="124" height="96" rx="10" fill="#eef6ff" stroke="#9ec6ef"/>
+                <rect x="48" y="28" width="84" height="42" rx="8" fill="#f7fbff" stroke="#9ec6ef"/>
+                <polygon points="40,28 90,4 140,28" fill="#d7ebff" stroke="#8eb6e4"/>
+                <rect x="82" y="8" width="16" height="22" rx="4" fill="#b9d8f7"/>
+                <circle cx="90" cy="48" r="10" fill="#fff" stroke="#7aaee0"/>
+                <circle cx="90" cy="48" r="3" fill="#3b82f6"/>
+                <g fill="#cfe6fb">
+                  <rect x="42" y="76" width="18" height="18" rx="3"/>
+                  <rect x="68" y="76" width="18" height="18" rx="3"/>
+                  <rect x="94" y="76" width="18" height="18" rx="3"/>
+                  <rect x="120" y="76" width="18" height="18" rx="3"/>
+                  <rect x="42" y="104" width="18" height="18" rx="3"/>
+                  <rect x="120" y="104" width="18" height="18" rx="3"/>
+                </g>
+                <rect x="76" y="112" width="28" height="42" rx="4" fill="#93c5fd"/>
+              </svg>
+            </div>
+            <div class="campus-art campus-art--clinic" aria-hidden="true">
+              <svg viewBox="0 0 150 150" fill="none">
+                <ellipse cx="75" cy="140" rx="62" ry="8" fill="#c7e4ff" opacity=".7"/>
+                <rect x="22" y="48" width="106" height="88" rx="14" fill="#f4f9ff" stroke="#9ec6ef"/>
+                <rect x="38" y="28" width="74" height="28" rx="8" fill="#dbeafe"/>
+                <rect x="68" y="16" width="14" height="18" rx="3" fill="#60a5fa"/>
+                <rect x="64" y="34" width="22" height="6" rx="2" fill="#fff"/>
+                <rect x="71" y="27" width="8" height="20" rx="2" fill="#fff"/>
+                <g fill="#bfdbfe">
+                  <rect x="36" y="68" width="16" height="16" rx="3"/>
+                  <rect x="98" y="68" width="16" height="16" rx="3"/>
+                </g>
+                <rect x="60" y="96" width="30" height="40" rx="6" fill="#93c5fd"/>
+              </svg>
+            </div>
+            <div class="campus-art campus-art--tree campus-art--tree-l" aria-hidden="true"></div>
+            <div class="campus-art campus-art--tree campus-art--tree-r" aria-hidden="true"></div>
+
+            <button type="button" class="float-card float-card--visits" data-phone-screen="book" data-visit-type="in-person">
+              <span class="float-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v6M4 5h4"/><path d="M19 13a7 7 0 11-14 0 5 5 0 0110 0"/><path d="M12 10v6M9 13h6"/></svg>
+              </span>
+              In-Person Visits
+            </button>
+            <button type="button" class="float-card float-card--tele" data-phone-screen="telehealth" data-visit-type="telehealth">
+              <span class="float-card__icon float-card__icon--tele" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M15 10l5-3v10l-5-3v-4z"/><rect x="3" y="7" width="12" height="10" rx="2"/></svg>
+              </span>
+              Telehealth
+            </button>
+            <button type="button" class="float-card float-card--records" data-phone-screen="records">
+              <span class="float-card__icon float-card__icon--records" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 2H7a2 2 0 00-2 2v16a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg>
+              </span>
+              Medical Records
+            </button>
+
+            <div class="phone" id="phoneMockup">
+              <div class="phone__bezel">
+                <div class="phone__screen">
+                  <div class="phone-status">
+                    <span id="phoneTime">9:41</span>
+                    <span class="phone-status__icons" aria-hidden="true">●●● ▮</span>
+                  </div>
+                  <div class="phone-app" id="phoneApp" data-screen="home">
+                    <section class="phone-view" data-view="home">
+                      <div class="phone-brand">
+                        <img src="logo.png" alt="" width="22" height="22">
+                        DiagnosTech
+                      </div>
+                      <button type="button" class="phone-cta" data-phone-screen="book">
+                        Book Appointment
+                        <small>Clinic · Today · Ready in 2 min</small>
+                      </button>
+                      <nav class="phone-menu" aria-label="App menu">
+                        <button type="button" data-phone-screen="appointments">My Appointments</button>
+                        <button type="button" data-phone-screen="records">Medical Records</button>
+                        <button type="button" data-phone-screen="prescriptions">Prescriptions</button>
+                        <button type="button" data-phone-screen="telehealth">Telehealth Visit</button>
+                      </nav>
+                    </section>
+
+                    <section class="phone-view" data-view="book" hidden>
+                      <header class="phone-bar">
+                        <button type="button" class="phone-back" data-phone-screen="home" aria-label="Back">←</button>
+                        <h3>Book visit</h3>
+                      </header>
+                      <form class="phone-form" id="phoneBookForm">
+                        <label>Department
+                          <select name="department" required>
+                            <option value="general">General Medicine</option>
+                            <option value="cardiology">Cardiology</option>
+                            <option value="neurology">Neurology</option>
+                            <option value="orthopedics">Orthopedics</option>
+                            <option value="ophthalmology">Ophthalmology</option>
+                            <option value="mental-health">Mental Health</option>
+                          </select>
+                        </label>
+                        <label>Visit type
+                          <select name="visitType" id="phoneVisitType">
+                            <option value="in-person">In-person</option>
+                            <option value="telehealth">Telehealth</option>
+                          </select>
+                        </label>
+                        <label>Date
+                          <input type="date" name="date" required>
+                        </label>
+                        <button type="submit" class="phone-cta phone-cta--sm">Confirm slot</button>
+                      </form>
+                    </section>
+
+                    <section class="phone-view" data-view="appointments" hidden>
+                      <header class="phone-bar">
+                        <button type="button" class="phone-back" data-phone-screen="home" aria-label="Back">←</button>
+                        <h3>Appointments</h3>
+                      </header>
+                      <ul class="phone-list" id="phoneAppointments"></ul>
+                    </section>
+
+                    <section class="phone-view" data-view="records" hidden>
+                      <header class="phone-bar">
+                        <button type="button" class="phone-back" data-phone-screen="home" aria-label="Back">←</button>
+                        <h3>Records</h3>
+                      </header>
+                      <ul class="phone-list">
+                        <li><button type="button" data-open-info="record-cbc"><strong>CBC panel</strong><span>Mar 12 · Normal</span></button></li>
+                        <li><button type="button" data-open-info="record-vaccine"><strong>Flu vaccine</strong><span>Jan 8 · On file</span></button></li>
+                        <li><button type="button" data-open-info="record-pe"><strong>Physical exam</strong><span>Nov 2 · Cleared</span></button></li>
+                      </ul>
+                    </section>
+
+                    <section class="phone-view" data-view="prescriptions" hidden>
+                      <header class="phone-bar">
+                        <button type="button" class="phone-back" data-phone-screen="home" aria-label="Back">←</button>
+                        <h3>Prescriptions</h3>
+                      </header>
+                      <ul class="phone-list">
+                        <li><button type="button" data-open-info="rx-loratadine"><strong>Loratadine 10mg</strong><span>Refill available</span></button></li>
+                        <li><button type="button" data-open-info="rx-ibuprofen"><strong>Ibuprofen 200mg</strong><span>As needed</span></button></li>
+                      </ul>
+                    </section>
+
+                    <section class="phone-view" data-view="telehealth" hidden>
+                      <header class="phone-bar">
+                        <button type="button" class="phone-back" data-phone-screen="home" aria-label="Back">←</button>
+                        <h3>Telehealth</h3>
+                      </header>
+                      <div class="phone-tele">
+                        <p>Join a secure video visit from anywhere on campus.</p>
+                        <button type="button" class="phone-cta phone-cta--sm" data-open-booking data-visit-type="telehealth">Schedule video visit</button>
+                        <button type="button" class="phone-ghost" id="joinDemoVisit">Start demo waiting room</button>
+                      </div>
+                    </section>
+
+                    <section class="phone-view" data-view="waiting" hidden>
+                      <header class="phone-bar">
+                        <button type="button" class="phone-back" data-phone-screen="telehealth" aria-label="Back">←</button>
+                        <h3>Waiting room</h3>
+                      </header>
+                      <div class="phone-tele">
+                        <div class="phone-pulse" aria-hidden="true"></div>
+                        <p id="waitingCopy">Connecting you with a campus clinician…</p>
+                        <button type="button" class="phone-ghost" data-phone-screen="home">Leave waiting room</button>
+                      </div>
+                    </section>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-community">
+              <div class="hero-community__lead">
+                <span class="hero-community__icon" aria-hidden="true">👥</span>
+                <strong>Partnered with La Verdad Diagnostic Center</strong>
+              </div>
+              <dl>
+                <div><dt>1,200+</dt><dd>Students &amp; Staff</dd></div>
+                <div><dt>6</dt><dd>Departments</dd></div>
+                <div><dt>24/7</dt><dd>Digital Access</dd></div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services -->
+    <section class="section" id="services">
+      <div class="container">
+        <div class="section__header reveal">
+          <span class="section__label">Our Services</span>
+          <h2>Complete care for your campus community</h2>
+          <p>From routine check-ups to specialized consultations, DiagnosTech brings every health service under one digital roof.</p>
+        </div>
+        <div class="services-grid">
+          <article class="card service-card reveal">
+            <div class="service-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"/><path d="M12 14v4M10 16h4"/></svg>
+            </div>
+            <h3>Online Booking</h3>
+            <p>Schedule appointments in seconds with real-time availability across all campus clinics.</p>
+            <button type="button" class="btn btn--outline btn--full" data-open-booking>Book now</button>
+          </article>
+          <article class="card service-card reveal reveal--delay">
+            <div class="service-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6M12 9v6M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg>
+            </div>
+            <h3>Telehealth Visits</h3>
+            <p>Connect with licensed providers via secure video calls from your dorm or office.</p>
+            <button type="button" class="btn btn--outline btn--full" data-open-booking data-visit-type="telehealth">Start a video visit</button>
+          </article>
+          <article class="card service-card reveal">
+            <div class="service-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
+            </div>
+            <h3>Health Records</h3>
+            <p>Access lab results, prescriptions, and visit history in one secure student portal.</p>
+            <button type="button" class="btn btn--outline btn--full" data-open-info="records">View sample records</button>
+          </article>
+          <article class="card service-card reveal reveal--delay">
+            <div class="service-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+            </div>
+            <h3>Insurance Support</h3>
+            <p>Verify coverage, submit claims, and get guidance on university health plans.</p>
+            <button type="button" class="btn btn--outline btn--full" data-open-info="insurance">Check coverage</button>
+          </article>
+          <article class="card service-card reveal">
+            <div class="service-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+            </div>
+            <h3>Smart Reminders</h3>
+            <p>Never miss an appointment with SMS, email, and in-app notifications.</p>
+            <button type="button" class="btn btn--outline btn--full" id="enableReminders">Enable reminders</button>
+          </article>
+          <article class="card service-card reveal reveal--delay">
+            <div class="service-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            </div>
+            <h3>Wellness Programs</h3>
+            <p>Join campus wellness workshops, mental health groups, and fitness screenings.</p>
+            <button type="button" class="btn btn--outline btn--full" data-open-info="wellness">Browse programs</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Departments -->
+    <section class="section section--alt" id="departments">
+      <div class="container">
+        <div class="section__header reveal">
+          <span class="section__label">Departments</span>
+          <h2>Specialized care across every discipline</h2>
+          <p>Our university health network spans multiple departments, each staffed by board-certified professionals.</p>
+        </div>
+        <div class="departments-grid">
+          <article class="card department-card reveal">
+            <span class="department-card__emoji" aria-hidden="true">🫀</span>
+            <h3>Cardiology</h3>
+            <p>Heart health screenings, ECG diagnostics, and preventive cardiac care.</p>
+            <span class="department-card__count">8 specialists</span>
+            <button type="button" class="btn btn--outline btn--full" data-open-booking data-department="cardiology">Book cardiology</button>
+          </article>
+          <article class="card department-card reveal reveal--delay">
+            <span class="department-card__emoji" aria-hidden="true">🧠</span>
+            <h3>Neurology</h3>
+            <p>Headache clinics, cognitive assessments, and neurological consultations.</p>
+            <span class="department-card__count">6 specialists</span>
+            <button type="button" class="btn btn--outline btn--full" data-open-booking data-department="neurology">Book neurology</button>
+          </article>
+          <article class="card department-card reveal">
+            <span class="department-card__emoji" aria-hidden="true">🦴</span>
+            <h3>Orthopedics</h3>
+            <p>Sports injuries, joint care, and physical therapy referrals.</p>
+            <span class="department-card__count">10 specialists</span>
+            <button type="button" class="btn btn--outline btn--full" data-open-booking data-department="orthopedics">Book orthopedics</button>
+          </article>
+          <article class="card department-card reveal reveal--delay">
+            <span class="department-card__emoji" aria-hidden="true">👁️</span>
+            <h3>Ophthalmology</h3>
+            <p>Vision exams, contact lens fittings, and eye disease management.</p>
+            <span class="department-card__count">5 specialists</span>
+            <button type="button" class="btn btn--outline btn--full" data-open-booking data-department="ophthalmology">Book ophthalmology</button>
+          </article>
+          <article class="card department-card reveal">
+            <span class="department-card__emoji" aria-hidden="true">🧬</span>
+            <h3>Laboratory</h3>
+            <p>Blood work, urinalysis, and rapid diagnostic testing on campus.</p>
+            <span class="department-card__count">12 technicians</span>
+            <button type="button" class="btn btn--outline btn--full" data-open-booking data-department="general">Book lab visit</button>
+          </article>
+          <article class="card department-card reveal reveal--delay">
+            <span class="department-card__emoji" aria-hidden="true">💚</span>
+            <h3>Mental Health</h3>
+            <p>Counseling, crisis support, and wellness coaching for students.</p>
+            <span class="department-card__count">15 counselors</span>
+            <button type="button" class="btn btn--outline btn--full" data-open-booking data-department="mental-health">Book counseling</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Doctors -->
+    <section class="section" id="doctors">
+      <div class="container">
+        <div class="section__header reveal">
+          <span class="section__label">Featured Doctors</span>
+          <h2>Meet our leading campus physicians</h2>
+          <p>Experienced, compassionate providers dedicated to the health of our university community.</p>
+        </div>
+        <div class="doctors-grid">
+          <article class="card doctor-card reveal">
+            <img
+              class="doctor-card__avatar"
+              src="dr-strange.jpg"
+              alt="Portrait of Dr. Strange"
+            >
+            <h3>Dr. Strange</h3>
+            <p class="doctor-card__role">General Medicine · 12 yrs</p>
+            <p class="doctor-card__bio">Specializes in preventive care and student wellness programs.</p>
+            <button type="button" class="btn btn--outline btn--full" data-open-booking data-department="general" data-doctor="Dr. Strange">Book with Dr. Strange</button>
+          </article>
+          <article class="card doctor-card reveal reveal--delay">
+            <img
+              class="doctor-card__avatar"
+              src="lebleb.jpg"
+              alt="Portrait of Dr. Lebleb Macalintal"
+            >
+            <h3>Dr. Lebleb Macalintal</h3>
+            <p class="doctor-card__role">Cardiology · 18 yrs</p>
+            <p class="doctor-card__bio">Leading cardiologist with expertise in athletic heart screening.</p>
+            <button type="button" class="btn btn--outline btn--full" data-open-booking data-department="cardiology" data-doctor="Dr. Lebleb Macalintal">Book with Dr. Macalintal</button>
+          </article>
+          <article class="card doctor-card reveal reveal--delay-2">
+            <img
+              class="doctor-card__avatar"
+              src="park.jpg"
+              alt="Portrait of Dr. Park"
+            >
+            <h3>Dr. Rizal Park</h3>
+            <p class="doctor-card__role">Mental Health · 9 yrs</p>
+            <p class="doctor-card__bio">Licensed counselor focused on student anxiety and stress management.</p>
+            <button type="button" class="btn btn--outline btn--full" data-open-booking data-department="mental-health" data-doctor="Dr. Rizal Park">Book with Dr. Park</button>
+          </article>
+          <article class="card doctor-card reveal reveal--delay-3">
+            <img
+              class="doctor-card__avatar"
+              src="lee.jpg"
+              alt="Portrait of Dr. Lee Ji-eun"
+            >
+            <h3>Dr. Lee Ji-eun</h3>
+            <p class="doctor-card__role">Orthopedics · 15 yrs</p>
+            <p class="doctor-card__bio">Sports medicine expert serving varsity and recreational athletes.</p>
+            <button type="button" class="btn btn--outline btn--full" data-open-booking data-department="orthopedics" data-doctor="Dr. Lee Ji-eun">Book with Dr. Lee</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section section--alt" id="testimonials">
+      <div class="container">
+        <div class="section__header reveal">
+          <span class="section__label">Testimonials</span>
+          <h2>What our campus community says</h2>
+          <p>Real stories from students and staff who trust DiagnosTech for their healthcare needs.</p>
+        </div>
+        <div class="testimonials-slider reveal">
+          <div class="testimonials-track" id="testimonialsTrack">
+            <article class="card testimonial-card">
+              <div class="testimonial-card__stars" aria-hidden="true">★★★★★</div>
+              <blockquote>"Ang galing! Wala akong masabi. Please gamitin nyo na to hahahaaha"</blockquote>
+              <footer>
+                <div class="testimonial-card__avatar" style="width: 56px; height: 56px; border-radius: 50%; overflow: hidden; flex-shrink: 0;">
+                  <img src="bcen.jpg" alt="Bcen Bulawan" style="display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                </div>
+                <div>
+                  <strong>Bcen Bulawan</strong>
+                  <span>Higher Education, ACT 1</span>
+                </div>
+              </footer>
+            </article>
+            <article class="card testimonial-card">
+              <div class="testimonial-card__stars" aria-hidden="true">★★★★★</div>
+              <blockquote>"As a faculty member, I appreciate how seamlessly DiagnosTech integrates with our university insurance. No paperwork headaches."</blockquote>
+              <footer>
+                <div class="testimonial-card__avatar" style="width: 56px; height: 56px; border-radius: 50%; overflow: hidden; flex-shrink: 0;">
+                  <img src="juan.jpg" alt="Prof. Juan Dela Cruz" style="display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                </div>
+                <div>
+                  <strong>Prof. Juan Dela Cruz</strong>
+                  <span>Department of Engineering</span>
+                </div>
+              </footer>
+            </article>
+            <article class="card testimonial-card">
+              <div class="testimonial-card__stars" aria-hidden="true">★★★★★</div>
+              <blockquote>"This is LAAAAAAAANNNSSSSS!!!"</blockquote>
+              <footer>
+                <div class="testimonial-card__avatar" style="width: 56px; height: 56px; border-radius: 50%; overflow: hidden; flex-shrink: 0;">
+                  <img src="lans.jpg" alt="LANS" style="display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                </div>
+                <div>
+                  <strong>LANS</strong>
+                  <span>Social Media Content Creator</span>
+                </div>
+              </footer>
+            </article>
+          </div>
+          <div class="testimonials-controls">
+            <button class="testimonials-btn" id="prevTestimonial" aria-label="Previous testimonial">←</button>
+            <div class="testimonials-dots" id="testimonialDots"></div>
+            <button class="testimonials-btn" id="nextTestimonial" aria-label="Next testimonial">→</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" id="faq">
+      <div class="container container--narrow">
+        <div class="section__header reveal">
+          <span class="section__label">FAQ</span>
+          <h2>Frequently asked questions</h2>
+          <p>Everything you need to know about using DiagnosTech on campus.</p>
+        </div>
+        <div class="faq-list reveal" id="faqList">
+          <details class="faq-item">
+            <summary>How do I book my first appointment?</summary>
+            <p>Sign in with your university credentials, select a department and provider, then choose an available time slot. You'll receive a confirmation email instantly.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Is DiagnosTech covered by student health insurance?</summary>
+            <p>Yes. DiagnosTech accepts all university-sponsored health plans. You can verify your coverage during the booking process before confirming your visit.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Can I cancel or reschedule an appointment?</summary>
+            <p>Absolutely. Visit your dashboard, select the appointment, and choose reschedule or cancel. We ask for at least 24 hours notice when possible.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Are telehealth visits available for all services?</summary>
+            <p>Most general consultations, mental health sessions, and follow-ups are available via telehealth. Some procedures require an in-person visit at the campus health center.</p>
+          </details>
+          <details class="faq-item">
+            <summary>How is my health data protected?</summary>
+            <p>DiagnosTech is fully HIPAA-compliant. All data is encrypted in transit and at rest, and only authorized medical staff can access your records.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="section section--contact" id="contact">
+      <div class="container">
+        <div class="contact-grid">
+          <div class="contact-info reveal">
+            <span class="section__label">Contact Us</span>
+            <h2>Ready to prioritize your health?</h2>
+            <p>Reach out to schedule an appointment or ask our team any questions about campus healthcare services.</p>
+            <ul class="contact-info__list">
+              <li>
+                <span class="contact-info__icon" aria-hidden="true">📍</span>
+                <div>
+                  <strong>La Verdad Diagnostics Center</strong>
+                  <a href="https://maps.google.com/?q=La+Verdad+Christian+College+Apalit+Pampanga" target="_blank" rel="noopener noreferrer">XQ55+J92, MacArthur Hwy, Apalit, Pampanga</a>
+                </div>
+              </li>
+              <li>
+                <span class="contact-info__icon" aria-hidden="true">📞</span>
+                <div>
+                  <strong>Phone</strong>
+                  <a href="tel:+15552344325">(555) 234-HEAL</a>
+                </div>
+              </li>
+              <li>
+                <span class="contact-info__icon" aria-hidden="true">✉️</span>
+                <div>
+                  <strong>Email</strong>
+                  <a href="mailto:diagnostech@laverdad.edu.ph">diagnostech@laverdad.edu.ph</a>
+                </div>
+              </li>
+              <li>
+                <span class="contact-info__icon" aria-hidden="true">🕐</span>
+                <div>
+                  <strong>Hours</strong>
+                  <button type="button" class="link-btn" data-open-info="hours">Mon–Fri 8 AM – 6 PM · Sat 9 AM – 1 PM</button>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <form class="card contact-form reveal reveal--delay" id="contactForm" novalidate>
+            <h3>Book an Appointment</h3>
+            <div class="form-group">
+              <label for="name">Full Name</label>
+              <input type="text" id="name" name="name" placeholder="Juan Dela Cruz" required>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="juan@laverdad.edu.ph" required>
+              </div>
+              <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" name="phone" placeholder="0987 654 3210" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="department">Department</label>
+                <select id="department" name="department" required>
+                  <option value="" disabled selected>Select a department</option>
+                  <option value="general">General Medicine</option>
+                  <option value="cardiology">Cardiology</option>
+                  <option value="neurology">Neurology</option>
+                  <option value="orthopedics">Orthopedics</option>
+                  <option value="ophthalmology">Ophthalmology</option>
+                  <option value="mental-health">Mental Health</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="visitType">Visit type</label>
+                <select id="visitType" name="visitType">
+                  <option value="in-person">In-person</option>
+                  <option value="telehealth">Telehealth</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="doctorPref">Preferred provider</label>
+              <input type="text" id="doctorPref" name="doctor" placeholder="Any available provider">
+            </div>
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" rows="4" placeholder="Tell us about your visit reason or preferred time…"></textarea>
+            </div>
+            <button type="submit" class="btn btn--primary btn--full btn--lg">Submit Request</button>
+            <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <a href="#hero" class="navbar__brand">
+            <img src="logo.png" alt="" class="navbar__logo" aria-hidden="true">
+            DiagnosTech
+          </a>
+          <p>University healthcare appointment system — caring for campus, one visit at a time.</p>
+        </div>
+        <div class="footer__links">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#departments">Departments</a></li>
+            <li><a href="#doctors">Doctors</a></li>
+            <li><a href="#faq">FAQ</a></li>
+          </ul>
+        </div>
+        <div class="footer__links">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="login.html">Student Portal</a></li>
+            <li><button type="button" data-open-info="insurance">Insurance Info</button></li>
+            <li><button type="button" data-open-info="privacy">Privacy Policy</button></li>
+            <li><button type="button" data-open-info="terms">Terms of Service</button></li>
+          </ul>
+        </div>
+        <div class="footer__links">
+          <h4>Connect</h4>
+          <ul>
+            <li><a href="https://twitter.com/intent/tweet?text=Campus%20care%20with%20DiagnosTech" target="_blank" rel="noopener noreferrer">Twitter / X</a></li>
+            <li><a href="https://www.linkedin.com/sharing/share-offsite/?url=https://laverdad.edu.ph" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+            <li><button type="button" data-copy="https://instagram.com" data-copy-label="Instagram link copied">Instagram</button></li>
+            <li><a href="mailto:care@diagnos.tech">care@diagnos.tech</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>&copy; 2026 DiagnosTech. All rights reserved.</p>
+        <p>HIPAA Compliant · FERPA Safe · Built for University Health</p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="modal" id="appModal" hidden>
+    <div class="modal__backdrop" data-close-modal></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+      <button type="button" class="modal__close" data-close-modal aria-label="Close dialog">×</button>
+      <h2 id="modalTitle"></h2>
+      <div class="modal__body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

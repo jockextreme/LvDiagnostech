@@ -8,6 +8,16 @@ const App = (() => {
 
   const STORAGE_KEY = 'diagnostech-appointments';
 
+  /* Local (not UTC) YYYY-MM-DD, so "today" is correct in UTC+8 */
+  const localISODate = (d = new Date()) =>
+    new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+
+  /* Escape user-supplied text before it goes into innerHTML */
+  const esc = (s) =>
+    String(s ?? '').replace(/[&<>"']/g, (c) => (
+      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
+
   const INFO = {
     insurance: {
       title: 'Student health insurance',
@@ -64,7 +74,9 @@ const App = (() => {
       }
     },
     save(items) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      } catch (e) { /* storage unavailable or full */ }
     },
     add(item) {
       const items = this.all();
@@ -118,7 +130,7 @@ const App = (() => {
 
   const Booking = {
     open(prefs = {}) {
-      const today = new Date().toISOString().slice(0, 10);
+      const today = localISODate();
       Modal.open({
         title: 'Book an appointment',
         html: `
@@ -200,7 +212,7 @@ const App = (() => {
         department: data.department,
         visitType: data.visitType || 'in-person',
         doctor: data.doctor || 'Next available',
-        date: data.date || new Date().toISOString().slice(0, 10),
+        date: data.date || localISODate(),
       });
       Phone.renderAppointments();
     },
@@ -239,7 +251,7 @@ const App = (() => {
       });
 
       const dateInput = this.app.querySelector('input[type="date"]');
-      if (dateInput) dateInput.min = dateInput.value = new Date().toISOString().slice(0, 10);
+      if (dateInput) dateInput.min = dateInput.value = localISODate();
 
       document.getElementById('joinDemoVisit')?.addEventListener('click', () => {
         this.show('waiting');
@@ -282,8 +294,8 @@ const App = (() => {
       list.innerHTML = items.map((item) => `
         <li>
           <button type="button" data-appt="${item.id}">
-            <strong>${item.date} · ${item.visitType}</strong>
-            <span>${item.department} · ${item.doctor}</span>
+            <strong>${esc(item.date)} · ${esc(item.visitType)}</strong>
+            <span>${esc(item.department)} · ${esc(item.doctor)}</span>
           </button>
         </li>
       `).join('');
@@ -293,7 +305,7 @@ const App = (() => {
           if (!item) return;
           Modal.open({
             title: 'Visit details',
-            html: `<p><strong>${item.date}</strong> · ${item.visitType}</p><p>Department: ${item.department}</p><p>Provider: ${item.doctor}</p><p>Requested by ${item.name}.</p>`,
+            html: `<p><strong>${esc(item.date)}</strong> · ${esc(item.visitType)}</p><p>Department: ${esc(item.department)}</p><p>Provider: ${esc(item.doctor)}</p><p>Requested by ${esc(item.name)}.</p>`,
           });
         });
       });
@@ -501,7 +513,7 @@ const App = (() => {
 
       Booking.commit({
         ...data,
-        date: new Date().toISOString().slice(0, 10),
+        date: localISODate(),
       });
       this.showStatus("Request submitted! We'll confirm your appointment within 24 hours.", 'success');
       this.form.reset();

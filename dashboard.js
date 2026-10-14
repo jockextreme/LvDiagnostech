@@ -98,11 +98,13 @@ const DashboardApp = (() => {
       let current = 'overview';
 
       sections.forEach((section) => {
-        const top = section.offsetTop - 140;
-        if (window.scrollY >= top) {
+        if (section.getBoundingClientRect().top <= 140) {
           current = section.id;
         }
       });
+
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+      if (atBottom && sections.length) current = sections[sections.length - 1].id;
 
       this.navAnchors.forEach((link) => {
         const href = link.getAttribute('href');
@@ -234,11 +236,17 @@ const DashboardApp = (() => {
 
     updateStatCount() {
       const count = this.list.querySelectorAll('.appointment-item').length;
-      const statValue = document.querySelector('.stat-card__value');
       const statCards = document.querySelectorAll('.stat-card');
 
       if (statCards[0]) {
         statCards[0].querySelector('.stat-card__value').textContent = count;
+      }
+
+      if (!count && !this.list.querySelector('.appointment-empty')) {
+        const li = document.createElement('li');
+        li.className = 'appointment-empty';
+        li.textContent = 'No upcoming appointments.';
+        this.list.appendChild(li);
       }
     },
   };

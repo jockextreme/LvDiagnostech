@@ -519,7 +519,7 @@ textarea {
   width: 6.75rem;
   padding: 12px 8px 14px;
   border: 0;
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--color-surface);
   box-shadow: var(--shadow-md);
   border-radius: 1.15rem;
   font-size: 0.75rem;
@@ -1691,4 +1691,9 @@ body.modal-open {
   .hero__stats {
     flex-direction: column;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { transition: none; }
 }

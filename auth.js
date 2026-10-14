@@ -139,10 +139,11 @@ const AuthApp = (() => {
       this.clearStatus();
 
       setTimeout(() => {
-        this.btn.classList.remove('loading');
-        this.btn.disabled = false;
-        this.showStatus(`Welcome back! Signed in as ${role} (${email}).`, 'success');
-      }, 1500);
+        this.showStatus(`Welcome back! Signed in as ${role}.`, 'success');
+        setTimeout(() => {
+          window.location.href = role === 'doctor' ? 'doctor_dashboard.html' : 'dashboard.html';
+        }, 600);
+      }, 900);
     },
 
     handleSSO() {

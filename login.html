@@ -11,6 +11,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="auth.css">
+  <script>
+    (function () {
+      var theme = 'light';
+      try {
+        var stored = localStorage.getItem('diagnostech-theme');
+        if (stored === 'dark' || stored === 'light') theme = stored;
+        else if (window.matchMedia('(prefers-color-scheme: dark)').matches) theme = 'dark';
+      } catch (e) {}
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body class="auth-page">
 
@@ -94,8 +106,8 @@
         </div>
 
         <form class="auth-form" id="loginForm" action="dashboard.html" novalidate>
-          <div class="form-group">
-            <label for="role">I am a</label>
+          <fieldset class="form-group role-fieldset">
+            <legend>I am a</legend>
             <div class="role-selector" id="roleSelector">
               <label class="role-option">
                 <input type="radio" name="role" value="patient" checked>
@@ -106,7 +118,7 @@
                 <span>Doctor</span>
               </label>
             </div>
-          </div>
+          </fieldset>
 
           <div class="form-group">
             <label for="email">Email</label>
@@ -233,30 +245,5 @@
   </footer>
 
   <script src="auth.js"></script>
-  <script>
-    (function() {
-      const loginForm = document.getElementById('loginForm');
-      const formStatus = document.getElementById('formStatus');
-
-      if (!loginForm) return;
-
-      loginForm.addEventListener('submit', function(event) {
-        const email = loginForm.email.value.trim();
-        const password = loginForm.password.value.trim();
-
-        if (!email || !password) {
-          event.preventDefault();
-          formStatus.textContent = 'Please enter both email and password to continue.';
-          formStatus.classList.add('form-status--error');
-          return;
-        }
-
-        event.preventDefault();
-        formStatus.textContent = 'Signing in…';
-        const role = loginForm.querySelector('input[name="role"]:checked').value;
-        window.location.href = role === 'doctor' ? 'doctor_dashboard.html' : 'dashboard.html';
-      });
-    })();
-  </script>
 </body>
 </html>

@@ -739,3 +739,13 @@ html[data-theme="dark"] .theme-switch__track::after {
     text-align: left;
   }
 }
+
+.appointment-empty {
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-sm);
+}

@@ -6,6 +6,31 @@
 const DashboardApp = (() => {
   'use strict';
 
+  /* Local (not UTC) YYYY-MM-DD, so "today" is correct in this timezone */
+  const localISODate = (d = new Date()) =>
+    new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+
+  const addDays = (n) => {
+    const d = new Date();
+    d.setDate(d.getDate() + n);
+    return localISODate(d);
+  };
+
+  /* Escape user-supplied text before it goes into innerHTML */
+  const esc = (s) =>
+    String(s ?? '').replace(/[&<>"']/g, (c) => (
+      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
+
+  const DEPARTMENTS = {
+    general: 'General Medicine',
+    cardiology: 'Cardiology',
+    neurology: 'Neurology',
+    orthopedics: 'Orthopedics',
+    ophthalmology: 'Ophthalmology',
+    'mental-health': 'Mental Health',
+  };
+
   /* ---------- Theme Module ---------- */
   const Theme = {
     key: 'diagnostech-theme',
@@ -200,54 +225,250 @@ const DashboardApp = (() => {
     },
   };
 
+  /* ---------- Booking Modal Module (patient dashboard only) ---------- */
+  const BookingModal = {
+    init() {
+      this.root = document.getElementById('apptModal');
+      if (!this.root) return;
+
+      this.form = document.getElementById('apptForm');
+      this.titleEl = document.getElementById('apptModalTitle');
+      this.statusEl = document.getElementById('apptFormStatus');
+      this.dialog = this.root.querySelector('.modal__dialog');
+
+      this.root.addEventListener('click', (e) => {
+        if (e.target.closest('[data-close-modal]')) this.close();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !this.root.hidden) this.close();
+      });
+      this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+    },
+
+    open({ title, defaults = {}, onSubmit }) {
+      if (!this.root) return;
+
+      const today = localISODate();
+      this.titleEl.textContent = title;
+      this.statusEl.textContent = '';
+      this.statusEl.className = 'form-status';
+      this.form.reset();
+
+      this.form.department.value = defaults.department || 'general';
+      this.form.visitType.value = defaults.visitType || 'in-person';
+      this.form.doctor.value = (defaults.doctor && defaults.doctor !== 'Next available') ? defaults.doctor : '';
+      this.form.date.min = today;
+      this.form.date.value = defaults.date && defaults.date >= today ? defaults.date : today;
+      this.form.time.value = defaults.time || '';
+
+      this.onSubmit = onSubmit;
+      this.root.hidden = false;
+      document.body.classList.add('modal-open');
+      this.dialog.focus();
+    },
+
+    close() {
+      if (!this.root) return;
+      this.root.hidden = true;
+      document.body.classList.remove('modal-open');
+    },
+
+    handleSubmit(e) {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(this.form).entries());
+
+      if (!data.date || !data.time) {
+        this.statusEl.textContent = 'Please choose a date and time.';
+        this.statusEl.className = 'form-status error';
+        return;
+      }
+
+      this.onSubmit?.(data);
+      this.close();
+    },
+  };
+
   /* ---------- Appointments Module ---------- */
   const Appointments = {
     init() {
       this.list = document.getElementById('appointmentList');
+      this.role = document.body.dataset.role;
+      this.isPatient = this.role === 'patient';
       if (!this.list) return;
+
+      if (this.isPatient) {
+        this.uid = Session.user.id;
+        this.items = [];
+        this.loaded = false;
+
+        AppointmentStore.seedIfEmpty(this.uid, [
+          { department: 'general', title: 'General Medicine Consultation', doctor: 'Rizal Park', visitType: 'in-person', date: addDays(0), time: '10:30 AM', room: 'Room B-204' },
+          { department: 'mental-health', title: 'Telehealth — Mental Health', doctor: 'Lebleb Macalintal', visitType: 'telehealth', date: addDays(5), time: '2:00 PM', room: 'Online' },
+        ]).catch((err) => console.error('Seed failed:', err));
+
+        this.render();
+        AppointmentStore.watch(this.uid, (items) => {
+          this.items = items;
+          this.loaded = true;
+          this.render();
+        });
+
+        document.querySelectorAll('[data-open-booking]').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.openModal();
+          });
+        });
+      }
 
       this.list.addEventListener('click', (e) => {
         const cancelBtn = e.target.closest('.appointment-cancel');
         const rescheduleBtn = e.target.closest('.appointment-reschedule');
+        const joinBtn = e.target.closest('.appointment-join');
 
-        if (cancelBtn) {
-          const item = cancelBtn.closest('.appointment-item');
-          this.cancel(item);
-        }
+        if (cancelBtn) this.cancel(cancelBtn.closest('.appointment-item'));
 
         if (rescheduleBtn) {
           const item = rescheduleBtn.closest('.appointment-item');
-          const title = item.querySelector('h3')?.textContent ?? 'appointment';
-          Toast.show(`Reschedule flow opened for "${title}".`);
+          if (this.isPatient) {
+            this.openModal(item.dataset.id);
+          } else {
+            const title = item.querySelector('h3')?.textContent ?? 'appointment';
+            Toast.show(`Reschedule flow opened for "${title}".`);
+          }
         }
+
+        if (joinBtn) Toast.show('Connecting to your telehealth room…');
       });
     },
 
-    cancel(item) {
-      if (!item || !confirm('Cancel this appointment?')) return;
+    render() {
+      const items = (this.items || [])
+        .slice()
+        .sort((a, b) => (a.date + (a.time || '')).localeCompare(b.date + (b.time || '')));
 
-      item.classList.add('removing');
-      setTimeout(() => {
-        item.remove();
-        this.updateStatCount();
-        Toast.show('Appointment cancelled successfully.');
-      }, 300);
-    },
+      this.list.innerHTML = '';
 
-    updateStatCount() {
-      const count = this.list.querySelectorAll('.appointment-item').length;
-      const statCards = document.querySelectorAll('.stat-card');
-
-      if (statCards[0]) {
-        statCards[0].querySelector('.stat-card__value').textContent = count;
-      }
-
-      if (!count && !this.list.querySelector('.appointment-empty')) {
+      if (!this.loaded) {
+        const li = document.createElement('li');
+        li.className = 'appointment-empty';
+        li.textContent = 'Loading appointments…';
+        this.list.appendChild(li);
+      } else if (!items.length) {
         const li = document.createElement('li');
         li.className = 'appointment-empty';
         li.textContent = 'No upcoming appointments.';
         this.list.appendChild(li);
+      } else {
+        items.forEach((a) => this.list.appendChild(this.buildItem(a)));
       }
+
+      const statCards = document.querySelectorAll('.stat-card');
+      if (statCards[0]) statCards[0].querySelector('.stat-card__value').textContent = this.loaded ? items.length : '—';
+    },
+
+    buildItem(a) {
+      const li = document.createElement('li');
+      li.className = 'appointment-item';
+      li.dataset.id = a.id;
+
+      const d = new Date(`${a.date}T00:00:00`);
+      const day = Number.isNaN(d.getTime()) ? '--' : d.getDate();
+      const month = Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-US', { month: 'short' });
+      const weekday = Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-US', { weekday: 'short' });
+      const isTele = a.visitType === 'telehealth';
+
+      li.innerHTML = `
+        <div class="appointment-item__date${isTele ? ' appointment-item__date--telehealth' : ''}">
+          <strong>${day}</strong>
+          <span>${esc(month)}</span>
+        </div>
+        <div class="appointment-item__info">
+          <h3>${esc(a.title)}</h3>
+          <p>Dr. ${esc(a.doctor || 'Next available')} · ${isTele ? 'Video Consultation' : 'Campus Health Center'}</p>
+          <span class="appointment-item__time">${esc(weekday)}, ${esc(a.time || '')} · ${esc(a.room || (isTele ? 'Online' : 'TBD'))}</span>
+        </div>
+        <div class="appointment-item__actions">
+          ${isTele
+            ? '<button class="btn btn--primary btn--sm appointment-join" type="button">Join Call</button>'
+            : '<button class="btn btn--outline btn--sm appointment-reschedule" type="button">Reschedule</button><button class="btn btn--ghost btn--sm appointment-cancel" type="button">Cancel</button>'}
+        </div>
+      `;
+      return li;
+    },
+
+    cancel(item) {
+      if (!item || !confirm('Cancel this appointment?')) return;
+      const id = item.dataset.id;
+
+      item.classList.add('removing');
+      setTimeout(() => {
+        if (this.isPatient) {
+          AppointmentStore.remove(this.uid, id)
+            .then(() => Toast.show('Appointment cancelled successfully.'))
+            .catch(() => Toast.show('Could not cancel — check your connection.'));
+          return;
+        } else {
+          item.remove();
+          const count = this.list.querySelectorAll('.appointment-item').length;
+          const statCards = document.querySelectorAll('.stat-card');
+          if (statCards[0]) statCards[0].querySelector('.stat-card__value').textContent = count;
+          if (!count && !this.list.querySelector('.appointment-empty')) {
+            const li = document.createElement('li');
+            li.className = 'appointment-empty';
+            li.textContent = 'No upcoming appointments.';
+            this.list.appendChild(li);
+          }
+        }
+        Toast.show('Appointment cancelled successfully.');
+      }, 300);
+    },
+
+    openModal(editId) {
+      const editing = editId ? (this.items || []).find((a) => a.id === editId) : null;
+
+      BookingModal.open({
+        title: editing ? 'Reschedule appointment' : 'Book an appointment',
+        defaults: editing || {},
+        onSubmit: (data) => {
+          const label = DEPARTMENTS[data.department] || 'General Medicine';
+          const payload = {
+            department: data.department,
+            title: data.visitType === 'telehealth' ? `Telehealth — ${label}` : `${label} Consultation`,
+            doctor: (data.doctor || '').trim() || 'Next available',
+            visitType: data.visitType,
+            date: data.date,
+            time: data.time,
+            room: data.visitType === 'telehealth' ? 'Online' : 'Room B-204',
+          };
+
+          const action = editing
+            ? AppointmentStore.update(this.uid, editing.id, payload).then(() => 'Appointment rescheduled successfully.')
+            : AppointmentStore.add(this.uid, payload).then(() => 'Appointment booked successfully.');
+
+          action
+            .then((msg) => Toast.show(msg))
+            .catch(() => Toast.show('Could not save — check your connection.'));
+        },
+      });
+    },
+  };
+
+  /* ---------- Preview Module (features not yet wired to real data) ---------- */
+  const StaticPreview = {
+    init() {
+      const selector = [
+        'a.quick-action[href="#"]:not([data-open-booking])',
+        '.dashboard-card__link[href="#"]',
+        '.record-item .btn',
+      ].join(',');
+
+      document.querySelectorAll(selector).forEach((el) => {
+        el.addEventListener('click', (e) => {
+          if (el.tagName === 'A') e.preventDefault();
+          Toast.show('This feature is coming soon.');
+        });
+      });
     },
   };
 
@@ -289,6 +510,7 @@ const DashboardApp = (() => {
       const user = Auth.guard(document.body.dataset.role);
       if (!user) return false;
 
+      this.user = user;
       Auth.applyUser(user);
       document.querySelectorAll('[data-signout]').forEach((link) => {
         link.addEventListener('click', (e) => {
@@ -310,8 +532,10 @@ const DashboardApp = (() => {
       UserMenu.init();
       Greeting.init();
       ScrollReveal.init();
+      BookingModal.init();
       Appointments.init();
       Notifications.init();
+      StaticPreview.init();
     },
   };
 })();

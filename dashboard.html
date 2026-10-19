@@ -41,13 +41,6 @@
         <span></span>
       </button>
 
-      <ul class="navbar__links" id="navLinks">
-        <li><a href="#overview" class="active">Overview</a></li>
-        <li><a href="#appointments">Appointments</a></li>
-        <li><a href="#records">Health Records</a></li>
-        <li><a href="#notifications">Notifications</a></li>
-      </ul>
-
       <div class="navbar__tools">
         <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode" aria-pressed="false">
           <svg class="theme-toggle__moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
@@ -101,7 +94,7 @@
           <h1>Welcome back, <span class="text-gradient" data-user-welcome>there</span></h1>
           <p class="dashboard-header__sub">Here's an overview of your campus health activity.</p>
         </div>
-        <a href="index.html#contact" class="btn btn--primary btn--lg">Book Appointment</a>
+        <button type="button" class="btn btn--primary btn--lg" data-open-booking>Book Appointment</button>
       </section>
 
       <!-- Stats -->
@@ -153,37 +146,7 @@
             <h2>Upcoming Appointments</h2>
             <a href="#" class="dashboard-card__link">View all</a>
           </div>
-          <ul class="appointment-list" id="appointmentList">
-            <li class="appointment-item" data-id="1">
-              <div class="appointment-item__date">
-                <strong>19</strong>
-                <span>Oct</span>
-              </div>
-              <div class="appointment-item__info">
-                <h3>General Check-up</h3>
-                <p>Dr. Rizal Park · Campus Health Center</p>
-                <span class="appointment-item__time">Mon, 10:30 AM · Room B-204</span>
-              </div>
-              <div class="appointment-item__actions">
-                <button class="btn btn--outline btn--sm appointment-reschedule" type="button">Reschedule</button>
-                <button class="btn btn--ghost btn--sm appointment-cancel" type="button">Cancel</button>
-              </div>
-            </li>
-            <li class="appointment-item" data-id="2">
-              <div class="appointment-item__date appointment-item__date--telehealth">
-                <strong>24</strong>
-                <span>Oct</span>
-              </div>
-              <div class="appointment-item__info">
-                <h3>Telehealth — Mental Health</h3>
-                <p>Dr. Lebleb Macalintal · Video Consultation</p>
-                <span class="appointment-item__time">Sat, 2:00 PM · Online</span>
-              </div>
-              <div class="appointment-item__actions">
-                <button class="btn btn--primary btn--sm" type="button">Join Call</button>
-              </div>
-            </li>
-          </ul>
+          <ul class="appointment-list" id="appointmentList"></ul>
         </section>
 
         <!-- Quick Actions -->
@@ -192,7 +155,7 @@
             <h2>Quick Actions</h2>
           </div>
           <div class="quick-actions">
-            <a href="index.html#contact" class="quick-action">
+            <a href="#" class="quick-action" data-open-booking>
               <span class="quick-action__icon" aria-hidden="true">📅</span>
               <span>Book Visit</span>
             </a>
@@ -291,6 +254,61 @@
   <!-- Toast -->
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+  <!-- Booking / Reschedule Modal -->
+  <div class="modal" id="apptModal" hidden>
+    <div class="modal__backdrop" data-close-modal></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="apptModalTitle" tabindex="-1">
+      <button type="button" class="modal__close" data-close-modal aria-label="Close dialog">×</button>
+      <h2 id="apptModalTitle">Book an appointment</h2>
+      <form class="contact-form" id="apptForm" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="apptDept">Department</label>
+            <select id="apptDept" name="department" required>
+              <option value="general">General Medicine</option>
+              <option value="cardiology">Cardiology</option>
+              <option value="neurology">Neurology</option>
+              <option value="orthopedics">Orthopedics</option>
+              <option value="ophthalmology">Ophthalmology</option>
+              <option value="mental-health">Mental Health</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="apptVisitType">Visit type</label>
+            <select id="apptVisitType" name="visitType">
+              <option value="in-person">In-person</option>
+              <option value="telehealth">Telehealth</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="apptDoctor">Preferred provider</label>
+          <input id="apptDoctor" name="doctor" placeholder="Any available provider">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="apptDate">Date</label>
+            <input id="apptDate" name="date" type="date" required>
+          </div>
+          <div class="form-group">
+            <label for="apptTime">Time</label>
+            <select id="apptTime" name="time" required>
+              <option value="">Select a time</option>
+              <option>9:00 AM</option>
+              <option>10:30 AM</option>
+              <option>1:00 PM</option>
+              <option>2:00 PM</option>
+              <option>3:30 PM</option>
+              <option>4:30 PM</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn--primary btn--full" id="apptSubmitBtn">Confirm</button>
+        <p class="form-status" id="apptFormStatus" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="footer footer--compact">
     <div class="container">
@@ -301,7 +319,10 @@
     </div>
   </footer>
 
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
   <script src="session.js"></script>
+  <script src="appointments.js"></script>
   <script src="dashboard.js"></script>
 </body>
 </html>

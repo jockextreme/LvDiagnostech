@@ -72,5 +72,21 @@ const AppointmentStore = (() => {
     remove(uid, id) {
       return col.doc(id).delete();
     },
+
+    /**
+     * Rule-based "AI Smart Scheduling" helper: looks across ALL patients'
+     * bookings (not just the current user's) for the same department/date,
+     * so it can suggest a slot that isn't already taken. Not real AI — just
+     * conflict-avoidance logic over real shared data.
+     */
+    async bookedSlotsFor(department, date) {
+      const snap = await col.where('department', '==', department).where('date', '==', date).get();
+      const taken = [];
+      snap.forEach((d) => {
+        const t = d.data().time;
+        if (t) taken.push(t);
+      });
+      return taken;
+    },
   };
 })();

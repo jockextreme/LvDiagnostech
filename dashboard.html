@@ -167,6 +167,14 @@
               <span class="quick-action__icon" aria-hidden="true">📋</span>
               <span>View Records</span>
             </a>
+            <button type="button" class="quick-action" id="pharmacyTriggerBtn">
+              <span class="quick-action__icon" aria-hidden="true">📍</span>
+              <span>Find Pharmacies</span>
+            </button>
+            <button type="button" class="quick-action" id="diagTriggerBtn">
+              <span class="quick-action__icon" aria-hidden="true">🩹</span>
+              <span>AI Symptom Check</span>
+            </button>
             <a href="index.html#faq" class="quick-action">
               <span class="quick-action__icon" aria-hidden="true">💬</span>
               <span>Get Support</span>
@@ -180,33 +188,7 @@
             <h2>Recent Health Records</h2>
             <a href="#" class="dashboard-card__link">View all</a>
           </div>
-          <div class="records-list">
-            <article class="record-item record-item--new">
-              <div class="record-item__icon" aria-hidden="true">🧪</div>
-              <div class="record-item__content">
-                <h3>Blood Panel Results</h3>
-                <p>Complete metabolic panel · Oct 12, 2026</p>
-              </div>
-              <span class="record-item__badge">New</span>
-              <button class="btn btn--outline btn--sm" type="button">View</button>
-            </article>
-            <article class="record-item">
-              <div class="record-item__icon" aria-hidden="true">💊</div>
-              <div class="record-item__content">
-                <h3>Prescription Refill</h3>
-                <p>Vitamin D supplement · Oct 1, 2026</p>
-              </div>
-              <button class="btn btn--ghost btn--sm" type="button">View</button>
-            </article>
-            <article class="record-item">
-              <div class="record-item__icon" aria-hidden="true">🩺</div>
-              <div class="record-item__content">
-                <h3>Annual Physical Summary</h3>
-                <p>Dr. Elena Martinez · Sep 15, 2026</p>
-              </div>
-              <button class="btn btn--ghost btn--sm" type="button">View</button>
-            </article>
-          </div>
+          <div class="records-list"></div>
         </section>
 
         <!-- Notifications -->
@@ -303,10 +285,55 @@
             </select>
           </div>
         </div>
+        <div class="appt-suggest-row">
+          <button type="button" class="btn btn--outline btn--sm" id="apptSuggestBtn">✨ Suggest best time</button>
+          <span class="form-hint" id="apptSuggestNote"></span>
+        </div>
         <button type="submit" class="btn btn--primary btn--full" id="apptSubmitBtn">Confirm</button>
         <p class="form-status" id="apptFormStatus" role="status" aria-live="polite"></p>
       </form>
     </div>
+  </div>
+
+  <!-- AI Preliminary Diagnostic Check Modal -->
+  <div class="modal" id="diagModal" hidden>
+    <div class="modal__backdrop" data-close-modal></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="diagModalTitle" tabindex="-1">
+      <button type="button" class="modal__close" data-close-modal aria-label="Close dialog">×</button>
+      <h2 id="diagModalTitle">AI Preliminary Diagnostic Check</h2>
+      <p class="form-hint">Describe how you're feeling in your own words. This is a simple prototype, not a medical diagnosis.</p>
+      <form class="contact-form" id="diagForm" novalidate>
+        <div class="form-group">
+          <label for="diagSymptoms">Your symptoms</label>
+          <textarea id="diagSymptoms" name="symptoms" rows="3" placeholder="e.g. mild headache and a runny nose since yesterday" required></textarea>
+        </div>
+        <button type="submit" class="btn btn--primary btn--full">Check priority</button>
+      </form>
+      <div id="diagResult"></div>
+    </div>
+  </div>
+
+  <!-- AI Pharmacy Locator Modal -->
+  <div class="modal" id="pharmacyModal" hidden>
+    <div class="modal__backdrop" data-close-modal></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="pharmacyModalTitle" tabindex="-1">
+      <button type="button" class="modal__close" data-close-modal aria-label="Close dialog">×</button>
+      <h2 id="pharmacyModalTitle">Nearby Pharmacies</h2>
+      <div id="pharmacyResult"></div>
+    </div>
+  </div>
+
+  <!-- AI Health Chatbot widget -->
+  <button type="button" class="chatbot-toggle" id="chatbotToggle" aria-expanded="false" aria-label="Open health chatbot">💬</button>
+  <div class="chatbot-panel" id="chatbotPanel" hidden>
+    <div class="chatbot-panel__header">DiagnosTech Assistant</div>
+    <div class="chatbot-log" id="chatbotLog">
+      <div class="chatbot-msg chatbot-msg--bot">Hi! Ask me about booking, rescheduling, prescriptions, or pharmacy hours.</div>
+    </div>
+    <form class="chatbot-form" id="chatbotForm">
+      <input type="text" id="chatbotInput" placeholder="Type a question…" autocomplete="off">
+      <button type="submit" class="btn btn--primary btn--sm">Send</button>
+    </form>
   </div>
 
   <!-- Footer -->
@@ -323,6 +350,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
   <script src="session.js"></script>
   <script src="appointments.js"></script>
+  <script src="records.js"></script>
   <script src="dashboard.js"></script>
 </body>
 </html>

@@ -233,5 +233,11 @@ const Auth = (() => {
     return { ok: true, user: toPublic(user) };
   }
 
-  return { register, login, logout, current, guard, applyUser, homeFor, displayName, firstName, welcomeName, initials };
+  /* Look up a patient/doctor's public id by email (used by doctors to attach a record to a patient). */
+  function findByEmail(email) {
+    const user = readUsers().find((u) => u.email === normEmail(email));
+    return user ? toPublic(user) : null;
+  }
+
+  return { register, login, logout, current, guard, applyUser, homeFor, displayName, firstName, welcomeName, initials, findByEmail };
 })();

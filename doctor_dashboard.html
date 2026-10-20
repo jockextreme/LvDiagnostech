@@ -299,6 +299,63 @@
   <!-- Toast -->
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+  <!-- Issue Health Record / Prescription Modal -->
+  <div class="modal" id="recordModal" hidden>
+    <div class="modal__backdrop" data-close-modal></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="recordModalTitle" tabindex="-1">
+      <button type="button" class="modal__close" data-close-modal aria-label="Close dialog">×</button>
+      <h2 id="recordModalTitle">Issue a record or prescription</h2>
+      <form class="contact-form" id="recordForm" novalidate>
+        <div class="form-group">
+          <label for="recordEmail">Patient email</label>
+          <input id="recordEmail" name="email" type="email" placeholder="patient@laverdad.edu.ph" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="recordKind">Type</label>
+            <select id="recordKind" name="kind" required>
+              <option value="prescription">Prescription</option>
+              <option value="lab">Lab Result</option>
+              <option value="exam">Exam Summary</option>
+              <option value="note">Note</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="recordTitle">Title</label>
+            <input id="recordTitle" name="title" placeholder="e.g. Blood Panel Review" required>
+          </div>
+        </div>
+        <div class="form-group record-med-fields">
+          <label for="recordMed">Medication</label>
+          <input id="recordMed" name="medication" placeholder="e.g. Amoxicillin">
+        </div>
+        <div class="form-group record-med-fields">
+          <label for="recordDosage">Dosage / instructions</label>
+          <input id="recordDosage" name="dosage" placeholder="e.g. 500mg, 3x daily for 7 days">
+        </div>
+        <div class="form-group">
+          <label for="recordDetail">Notes (shown to patient)</label>
+          <textarea id="recordDetail" name="detail" rows="2" placeholder="Optional summary for the patient"></textarea>
+        </div>
+        <button type="submit" class="btn btn--primary btn--full">Send to patient</button>
+        <p class="form-status" id="recordFormStatus" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- AI Health Chatbot widget -->
+  <button type="button" class="chatbot-toggle" id="chatbotToggle" aria-expanded="false" aria-label="Open health chatbot">💬</button>
+  <div class="chatbot-panel" id="chatbotPanel" hidden>
+    <div class="chatbot-panel__header">DiagnosTech Assistant</div>
+    <div class="chatbot-log" id="chatbotLog">
+      <div class="chatbot-msg chatbot-msg--bot">Hi! Ask me about scheduling, prescriptions, or patient records.</div>
+    </div>
+    <form class="chatbot-form" id="chatbotForm">
+      <input type="text" id="chatbotInput" placeholder="Type a question…" autocomplete="off">
+      <button type="submit" class="btn btn--primary btn--sm">Send</button>
+    </form>
+  </div>
+
   <!-- Footer -->
   <footer class="footer footer--compact">
     <div class="container">
@@ -309,7 +366,10 @@
     </div>
   </footer>
 
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
   <script src="session.js"></script>
+  <script src="records.js"></script>
   <script src="dashboard.js"></script>
 </body>
 </html>

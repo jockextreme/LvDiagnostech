@@ -31,6 +31,28 @@ const DashboardApp = (() => {
     'mental-health': 'Mental Health',
   };
 
+  const TIME_SLOTS = ['9:00 AM', '10:30 AM', '1:00 PM', '2:00 PM', '3:30 PM', '4:30 PM'];
+
+  /* Rule-based symptom → urgency lookup for the preliminary check (NOT real AI, NOT a diagnosis). */
+  const SYMPTOM_RULES = [
+    { level: 'high', label: 'High — seek care soon', keywords: ['chest pain', 'difficulty breathing', 'shortness of breath', 'severe bleeding', 'fainted', 'unconscious', 'stroke', 'slurred speech', 'severe allergic', 'can\u2019t breathe'] },
+    { level: 'medium', label: 'Medium — book a visit soon', keywords: ['fever', 'persistent cough', 'vomiting', 'severe pain', 'infection', 'swelling', 'dizzy', 'dizziness'] },
+    { level: 'low', label: 'Low — routine check-up is fine', keywords: ['mild headache', 'runny nose', 'sore throat', 'rash', 'fatigue', 'tired', 'minor cut', 'cold'] },
+  ];
+
+  /* Scripted FAQ bot replies — keyword-matched, not a real LLM. */
+  const FAQ_RULES = [
+    { keywords: ['book', 'appointment', 'schedule visit'], reply: 'You can book a visit from your dashboard — click "Book Appointment" and choose a department, date, and time.' },
+    { keywords: ['cancel'], reply: 'To cancel, find the appointment on your dashboard and click "Cancel" next to it.' },
+    { keywords: ['reschedule'], reply: 'Click "Reschedule" next to the appointment you want to move, then pick a new date/time.' },
+    { keywords: ['password', 'forgot', 'login', 'log in'], reply: 'Use "Forgot password?" on the sign-in page, or contact campus support if you\u2019re still stuck.' },
+    { keywords: ['hour', 'open', 'schedule of clinic'], reply: 'The Campus Health Center is open Monday–Friday, 8:00 AM–5:00 PM. Telehealth visits may have different hours.' },
+    { keywords: ['prescription', 'medicine', 'medication'], reply: 'Prescriptions issued by your doctor appear under "Recent Health Records" on your dashboard.' },
+    { keywords: ['pharmacy', 'drug store'], reply: 'Use the "Find Nearby Pharmacies" quick action on your dashboard — it uses your location to list pharmacies close to you.' },
+    { keywords: ['emergency', 'urgent', 'help now'], reply: 'If this is a medical emergency, please call local emergency services or go to the nearest hospital right away — don\u2019t wait on this chat.' },
+  ];
+  const FAQ_FALLBACK = 'I\u2019m not sure about that one — please reach out to campus health support, or book a consultation for anything specific to your health.';
+
   /* ---------- Theme Module ---------- */
   const Theme = {
     key: 'diagnostech-theme',
@@ -236,6 +258,9 @@ const DashboardApp = (() => {
       this.statusEl = document.getElementById('apptFormStatus');
       this.dialog = this.root.querySelector('.modal__dialog');
 
+      this.suggestBtn = document.getElementById('apptSuggestBtn');
+      this.suggestNote = document.getElementById('apptSuggestNote');
+
       this.root.addEventListener('click', (e) => {
         if (e.target.closest('[data-close-modal]')) this.close();
       });
@@ -243,6 +268,36 @@ const DashboardApp = (() => {
         if (e.key === 'Escape' && !this.root.hidden) this.close();
       });
       this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+      this.suggestBtn?.addEventListener('click', () => this.suggestTime());
+    },
+
+    /* Rule-based "AI Smart Scheduling": picks the earliest slot not already
+       booked by anyone in the same department/date. Not real AI. */
+    async suggestTime() {
+      const department = this.form.department.value;
+      const date = this.form.date.value;
+      if (!date) {
+        this.suggestNote.textContent = 'Pick a date first.';
+        return;
+      }
+
+      this.suggestBtn.disabled = true;
+      this.suggestNote.textContent = 'Checking availability…';
+
+      try {
+        const taken = await AppointmentStore.bookedSlotsFor(department, date);
+        const free = TIME_SLOTS.find((t) => !taken.includes(t));
+        if (free) {
+          this.form.time.value = free;
+          this.suggestNote.textContent = `Suggested ${free} — the earliest open slot for this department on this date.`;
+        } else {
+          this.suggestNote.textContent = 'No open slots that day — try another date.';
+        }
+      } catch (err) {
+        this.suggestNote.textContent = 'Could not check availability — check your connection.';
+      } finally {
+        this.suggestBtn.disabled = false;
+      }
     },
 
     open({ title, defaults = {}, onSubmit }) {
@@ -252,6 +307,7 @@ const DashboardApp = (() => {
       this.titleEl.textContent = title;
       this.statusEl.textContent = '';
       this.statusEl.className = 'form-status';
+      if (this.suggestNote) this.suggestNote.textContent = '';
       this.form.reset();
 
       this.form.department.value = defaults.department || 'general';
@@ -454,13 +510,354 @@ const DashboardApp = (() => {
     },
   };
 
+  /* ---------- Health Records & Prescriptions Module ---------- */
+  const Records = {
+    init() {
+      this.list = document.querySelector('.records-list');
+      this.role = document.body.dataset.role;
+      this.isPatient = this.role === 'patient';
+      if (!this.list) return;
+
+      if (this.isPatient) {
+        this.uid = Session.user.id;
+        RecordStore.seedIfEmpty(this.uid, [
+          { kind: 'lab', title: 'Blood Panel Review', detail: 'Complete metabolic panel', issuedBy: 'Dr. Elena Martinez', date: addDays(-7) },
+          { kind: 'prescription', title: 'Prescription — Vitamin D3', detail: 'Vitamin D supplement', issuedBy: 'Dr. Elena Martinez', date: addDays(-18), medication: 'Vitamin D3', dosage: '1 tablet daily' },
+          { kind: 'exam', title: 'Annual Physical Summary', detail: 'Routine check-up', issuedBy: 'Dr. Elena Martinez', date: addDays(-35) },
+        ]).catch((err) => console.error('Record seed failed:', err));
+
+        RecordStore.watch(this.uid, (items) => {
+          this.items = items;
+          this.render();
+        });
+      } else {
+        this.wireDoctorIssueButton();
+      }
+    },
+
+    render() {
+      const items = (this.items || []).slice().sort((a, b) => b.date.localeCompare(a.date));
+      this.list.innerHTML = '';
+
+      if (!items.length) {
+        const p = document.createElement('p');
+        p.className = 'appointment-empty';
+        p.textContent = 'No health records yet.';
+        this.list.appendChild(p);
+        return;
+      }
+
+      const ICONS = { lab: '🧪', prescription: '💊', exam: '🩺', note: '📋' };
+      items.forEach((r) => {
+        const el = document.createElement('article');
+        el.className = 'record-item';
+        el.innerHTML = `
+          <div class="record-item__icon" aria-hidden="true">${ICONS[r.kind] || '📋'}</div>
+          <div class="record-item__content">
+            <h3>${esc(r.title)}</h3>
+            <p>${esc(r.detail || '')}${r.issuedBy ? ` · ${esc(r.issuedBy)}` : ''} · ${esc(r.date)}</p>
+          </div>
+          <button class="btn btn--ghost btn--sm" type="button">View</button>
+        `;
+        el.querySelector('.btn').addEventListener('click', () => {
+          const extra = r.kind === 'prescription' && r.medication
+            ? ` Medication: ${r.medication}${r.dosage ? ` (${r.dosage})` : ''}.`
+            : '';
+          Toast.show(`${r.title} — ${r.detail || ''}.${extra}`);
+        });
+        this.list.appendChild(el);
+      });
+    },
+
+    /* Doctor side: issue a record/prescription to a patient by email. */
+    wireDoctorIssueButton() {
+      const header = this.list.closest('.dashboard-card')?.querySelector('.dashboard-card__header');
+      if (!header) return;
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'dashboard-card__link dashboard-card__link--btn';
+      btn.textContent = 'Issue record';
+      header.appendChild(btn);
+
+      this.modal = document.getElementById('recordModal');
+      if (!this.modal) return;
+      this.form = document.getElementById('recordForm');
+      this.statusEl = document.getElementById('recordFormStatus');
+      this.dialog = this.modal.querySelector('.modal__dialog');
+
+      btn.addEventListener('click', () => this.openModal());
+      this.modal.addEventListener('click', (e) => {
+        if (e.target.closest('[data-close-modal]')) this.closeModal();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !this.modal.hidden) this.closeModal();
+      });
+      this.form.addEventListener('submit', (e) => this.handleIssue(e));
+      this.form.kind.addEventListener('change', () => this.toggleMedFields());
+    },
+
+    toggleMedFields() {
+      const isRx = this.form.kind.value === 'prescription';
+      this.form.querySelectorAll('.record-med-fields').forEach((el) => { el.hidden = !isRx; });
+    },
+
+    openModal() {
+      this.statusEl.textContent = '';
+      this.statusEl.className = 'form-status';
+      this.form.reset();
+      this.toggleMedFields();
+      this.modal.hidden = false;
+      document.body.classList.add('modal-open');
+      this.dialog.focus();
+    },
+
+    closeModal() {
+      this.modal.hidden = true;
+      document.body.classList.remove('modal-open');
+    },
+
+    async handleIssue(e) {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(this.form).entries());
+
+      if (!data.email || !data.title) {
+        this.statusEl.textContent = 'Patient email and a title are required.';
+        this.statusEl.className = 'form-status error';
+        return;
+      }
+
+      const patient = Auth.findByEmail(data.email);
+      if (!patient) {
+        this.statusEl.textContent = 'No account found with that email.';
+        this.statusEl.className = 'form-status error';
+        return;
+      }
+      if (patient.role !== 'patient') {
+        this.statusEl.textContent = 'That email belongs to a doctor account, not a patient.';
+        this.statusEl.className = 'form-status error';
+        return;
+      }
+
+      const record = {
+        kind: data.kind,
+        title: data.title,
+        detail: data.detail || '',
+        issuedBy: Auth.displayName(Session.user),
+        date: localISODate(),
+      };
+      if (data.kind === 'prescription') {
+        record.medication = data.medication || '';
+        record.dosage = data.dosage || '';
+      }
+
+      try {
+        await RecordStore.add(patient.id, record);
+        Toast.show(`Record sent to ${patient.name}.`);
+        this.closeModal();
+      } catch (err) {
+        this.statusEl.textContent = 'Could not save — check your connection.';
+        this.statusEl.className = 'form-status error';
+      }
+    },
+  };
+
+  /* ---------- AI Preliminary Diagnostic Check (rule-based, not real AI) ---------- */
+  const DiagnosticCheck = {
+    init() {
+      this.modal = document.getElementById('diagModal');
+      this.trigger = document.getElementById('diagTriggerBtn');
+      if (!this.modal || !this.trigger) return;
+
+      this.form = document.getElementById('diagForm');
+      this.resultEl = document.getElementById('diagResult');
+      this.dialog = this.modal.querySelector('.modal__dialog');
+
+      this.trigger.addEventListener('click', () => this.open());
+      this.modal.addEventListener('click', (e) => {
+        if (e.target.closest('[data-close-modal]')) this.close();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !this.modal.hidden) this.close();
+      });
+      this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+    },
+
+    open() {
+      this.form.reset();
+      this.resultEl.innerHTML = '';
+      this.modal.hidden = false;
+      document.body.classList.add('modal-open');
+      this.dialog.focus();
+    },
+
+    close() {
+      this.modal.hidden = true;
+      document.body.classList.remove('modal-open');
+    },
+
+    handleSubmit(e) {
+      e.preventDefault();
+      const text = (new FormData(this.form).get('symptoms') || '').toLowerCase();
+      let match = SYMPTOM_RULES.find((rule) => rule.keywords.some((k) => text.includes(k)));
+
+      const level = match ? match.level : 'low';
+      const label = match ? match.label : 'Low — routine check-up is fine';
+
+      this.resultEl.innerHTML = `
+        <p class="diag-result diag-result--${esc(level)}"><strong>Suggested priority:</strong> ${esc(label)}</p>
+        <p class="form-hint">This is a simple keyword-based prototype, not a medical diagnosis. Please consult a doctor for an accurate assessment — book a consultation if you're unsure.</p>
+      `;
+    },
+  };
+
+  /* ---------- AI Health Chatbot (scripted FAQ, not a real LLM) ---------- */
+  const Chatbot = {
+    init() {
+      this.panel = document.getElementById('chatbotPanel');
+      this.toggle = document.getElementById('chatbotToggle');
+      if (!this.panel || !this.toggle) return;
+
+      this.log = document.getElementById('chatbotLog');
+      this.form = document.getElementById('chatbotForm');
+      this.input = document.getElementById('chatbotInput');
+
+      this.toggle.addEventListener('click', () => {
+        const open = this.panel.hidden;
+        this.panel.hidden = !open;
+        this.toggle.setAttribute('aria-expanded', String(open));
+        if (open) this.input.focus();
+      });
+
+      this.form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = this.input.value.trim();
+        if (!text) return;
+        this.addMessage(text, 'user');
+        this.input.value = '';
+        setTimeout(() => this.addMessage(this.reply(text), 'bot'), 350);
+      });
+    },
+
+    reply(text) {
+      const lower = text.toLowerCase();
+      const match = FAQ_RULES.find((rule) => rule.keywords.some((k) => lower.includes(k)));
+      return match ? match.reply : FAQ_FALLBACK;
+    },
+
+    addMessage(text, from) {
+      const div = document.createElement('div');
+      div.className = `chatbot-msg chatbot-msg--${from}`;
+      div.textContent = text;
+      this.log.appendChild(div);
+      this.log.scrollTop = this.log.scrollHeight;
+    },
+  };
+
+  /* ---------- AI Pharmacy Locator (real OpenStreetMap data, browser geolocation) ---------- */
+  const PharmacyLocator = {
+    init() {
+      this.modal = document.getElementById('pharmacyModal');
+      this.trigger = document.getElementById('pharmacyTriggerBtn');
+      if (!this.modal || !this.trigger) return;
+
+      this.resultEl = document.getElementById('pharmacyResult');
+      this.dialog = this.modal.querySelector('.modal__dialog');
+
+      this.trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.open();
+      });
+      this.modal.addEventListener('click', (e) => {
+        if (e.target.closest('[data-close-modal]')) this.close();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !this.modal.hidden) this.close();
+      });
+    },
+
+    open() {
+      this.modal.hidden = false;
+      document.body.classList.add('modal-open');
+      this.dialog.focus();
+      this.search();
+    },
+
+    close() {
+      this.modal.hidden = true;
+      document.body.classList.remove('modal-open');
+    },
+
+    search() {
+      this.resultEl.innerHTML = '<p class="form-hint">Getting your location…</p>';
+
+      if (!navigator.geolocation) {
+        this.resultEl.innerHTML = '<p class="form-hint">Geolocation isn\u2019t supported on this browser.</p>';
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => this.fetchNearby(pos.coords.latitude, pos.coords.longitude),
+        () => {
+          this.resultEl.innerHTML = '<p class="form-hint">Location permission was denied — please allow location access and try again.</p>';
+        },
+        { timeout: 8000 }
+      );
+    },
+
+    async fetchNearby(lat, lon) {
+      this.resultEl.innerHTML = '<p class="form-hint">Searching nearby pharmacies…</p>';
+      const radius = 3000;
+      const query = `[out:json][timeout:10];node["amenity"="pharmacy"](around:${radius},${lat},${lon});out body 15;`;
+
+      try {
+        const res = await fetch('https://overpass-api.de/api/interpreter', {
+          method: 'POST',
+          body: query,
+        });
+        if (!res.ok) throw new Error('Request failed');
+        const data = await res.json();
+        this.render(data.elements || [], lat, lon);
+      } catch (err) {
+        this.resultEl.innerHTML = '<p class="form-hint">Could not reach the pharmacy directory — check your connection and try again.</p>';
+      }
+    },
+
+    render(elements, lat, lon) {
+      if (!elements.length) {
+        this.resultEl.innerHTML = '<p class="form-hint">No pharmacies found within 3 km. Try again from a different location.</p>';
+        return;
+      }
+
+      const withDistance = elements.map((el) => ({
+        name: (el.tags && el.tags.name) || 'Unnamed pharmacy',
+        address: el.tags ? [el.tags['addr:street'], el.tags['addr:city']].filter(Boolean).join(', ') : '',
+        distance: this.haversine(lat, lon, el.lat, el.lon),
+      })).sort((a, b) => a.distance - b.distance);
+
+      this.resultEl.innerHTML = withDistance.map((p) => `
+        <div class="pharmacy-item">
+          <strong>${esc(p.name)}</strong>
+          <span>${p.address ? esc(p.address) + ' · ' : ''}${p.distance.toFixed(1)} km away</span>
+        </div>
+      `).join('');
+    },
+
+    haversine(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    },
+  };
+
   /* ---------- Preview Module (features not yet wired to real data) ---------- */
   const StaticPreview = {
     init() {
       const selector = [
         'a.quick-action[href="#"]:not([data-open-booking])',
         '.dashboard-card__link[href="#"]',
-        '.record-item .btn',
       ].join(',');
 
       document.querySelectorAll(selector).forEach((el) => {
@@ -534,6 +931,10 @@ const DashboardApp = (() => {
       ScrollReveal.init();
       BookingModal.init();
       Appointments.init();
+      Records.init();
+      DiagnosticCheck.init();
+      Chatbot.init();
+      PharmacyLocator.init();
       Notifications.init();
       StaticPreview.init();
     },
